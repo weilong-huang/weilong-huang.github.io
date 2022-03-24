@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="背景要在App Store 新上架的App要在4月份前适配iOS 13,其中App如果使用了第三方登录的,就要同时支持AppleId 登录,也是一种第三方登录. 先放一个时序图: 第一步,客户端和AppleServer交互后请求后端客户端向苹果服务器请求,拿到用户的信息和identityToken.主要返回数据如下:  user: 用户唯一ID，在一个开发者账号下的APP获取到的是一样的，类似微信">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sign with Apple开发总结">
+<meta property="og:url" content="http://hwl.me/2020/03/19/sign%20with%20appleId%20%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="背景要在App Store 新上架的App要在4月份前适配iOS 13,其中App如果使用了第三方登录的,就要同时支持AppleId 登录,也是一种第三方登录. 先放一个时序图: 第一步,客户端和AppleServer交互后请求后端客户端向苹果服务器请求,拿到用户的信息和identityToken.主要返回数据如下:  user: 用户唯一ID，在一个开发者账号下的APP获取到的是一样的，类似微信">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20200319153719.png">
+<meta property="article:published_time" content="2020-03-19T07:34:13.000Z">
+<meta property="article:modified_time" content="2020-03-19T08:15:53.000Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20200319153719.png">
+
+<link rel="canonical" href="http://hwl.me/2020/03/19/sign%20with%20appleId%20%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>sign with Apple开发总结 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2020/03/19/sign%20with%20appleId%20%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          sign with Apple开发总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-03-19 15:34:13 / 修改时间：16:15:53" itemprop="dateCreated datePublished" datetime="2020-03-19T15:34:13+08:00">2020-03-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/03/19/sign%20with%20appleId%20%E6%80%BB%E7%BB%93/" class="post-meta-item leancloud_visitors" data-flag-title="sign with Apple开发总结" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/03/19/sign%20with%20appleId%20%E6%80%BB%E7%BB%93/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/19/sign%20with%20appleId%20%E6%80%BB%E7%BB%93/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>要在App Store 新上架的App要在4月份前适配iOS 13,其中App如果使用了第三方登录的,就要同时支持AppleId 登录,也是一种第三方登录.</p>
+<p>先放一个时序图:<br><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20200319153719.png"></p>
+<h2 id="第一步-客户端和AppleServer交互后请求后端"><a href="#第一步-客户端和AppleServer交互后请求后端" class="headerlink" title="第一步,客户端和AppleServer交互后请求后端"></a>第一步,客户端和AppleServer交互后请求后端</h2><p>客户端向苹果服务器请求,拿到用户的信息和identityToken.主要返回数据如下:</p>
+<ul>
+<li>user: 用户唯一ID，在一个开发者账号下的APP获取到的是一样的，类似微信开发API中的openid；</li>
+<li>identityToken: 「JWT」格式的token，用于验证信息合法性。</li>
+<li>email: 用户邮箱(可能为空)</li>
+<li>fullName: 昵称等信息</li>
+<li>realUserStatus: 是否是“真实用户”，可用于反作弊，对抗黑灰产. (0为黑户,1为不确定,2为正常用户)</li>
+</ul>
+<p>拿到信息后调用接口,把信息传给后端,但这样有个重要的问题就是不能保证安全性，无法判断请求是否是伪造的。这个时候就要使用identityToken了。</p>
+<h3 id="注意：当第一次认证成功之后，将不会再返回email，fullName等信息，可以在设置-gt-Apple-ID-gt-密码与安全性-gt-使用您AppleID的App-中删除对应的APP。"><a href="#注意：当第一次认证成功之后，将不会再返回email，fullName等信息，可以在设置-gt-Apple-ID-gt-密码与安全性-gt-使用您AppleID的App-中删除对应的APP。" class="headerlink" title="注意：当第一次认证成功之后，将不会再返回email，fullName等信息，可以在设置-&gt;Apple ID-&gt;密码与安全性-&gt;使用您AppleID的App 中删除对应的APP。"></a>注意：当第一次认证成功之后，将不会再返回email，fullName等信息，可以在设置-&gt;Apple ID-&gt;密码与安全性-&gt;使用您AppleID的App 中删除对应的APP。</h3><h2 id="第二步-后端校验identityToken合法性"><a href="#第二步-后端校验identityToken合法性" class="headerlink" title="第二步,后端校验identityToken合法性"></a>第二步,后端校验identityToken合法性</h2><p>identityTokenString实际上是JWT（JSON Web Token）格式的文件，JWT文件由三部分组成：</p>
+<ul>
+<li>Header</li>
+<li>Payload</li>
+<li>Signature</li>
+</ul>
+<span id="more"></span>
+
+<p>这三部分由”.”分割，其中Header和Payload是经过base64编码的。<br>Header base64解码之后示例：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;kid&quot;</span><span class="punctuation">:</span><span class="string">&quot;eXaunmL&quot;</span><span class="punctuation">,</span> <span class="comment">// 用来确定publicKey,后面说</span></span><br><span class="line">    <span class="attr">&quot;alg&quot;</span><span class="punctuation">:</span><span class="string">&quot;RS256&quot;</span> <span class="comment">// 加密算法</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>Payload base64解码之后示例：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;iss&quot;</span><span class="punctuation">:</span><span class="string">&quot;https://appleid.apple.com&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;aud&quot;</span><span class="punctuation">:</span><span class="string">&quot;com.easeapi.www&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;exp&quot;</span><span class="punctuation">:</span><span class="number">1584588402</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;iat&quot;</span><span class="punctuation">:</span><span class="number">1584587802</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;sub&quot;</span><span class="punctuation">:</span><span class="string">&quot;022409.17avbbaf112941e5a722788e7f3880f4.4565&quot;</span><span class="punctuation">,</span> <span class="comment">// 用户唯一ID</span></span><br><span class="line">    <span class="attr">&quot;c_hash&quot;</span><span class="punctuation">:</span><span class="string">&quot;DmuPZ_bX1Tr6AGFW3rDYbQ&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;auth_time&quot;</span><span class="punctuation">:</span><span class="number">1584587802</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;nonce_supported&quot;</span><span class="punctuation">:</span><span class="keyword">true</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>而Signature部分就是对Header及Payload两部分内容按指定算法进行签名，大致逻辑如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Signature = signature(base64UrlEncode(Header) + &quot;.&quot; + base64UrlEncode(Payload), secretKey)</span><br><span class="line">#signature代表具体的加密算法；</span><br><span class="line">#secretKey为密钥；</span><br></pre></td></tr></table></figure>
+
+<p>具体到identityToken，Apple目前采用的是RS256的非对称加密算法：</p>
+<p>Apple会使用私钥（也即为上面的secretKey）对Header及Payload加密，获取Signature；<br>将Header，Payload及Signature信息包装为JWT格式文件，即是identityToken；<br>那么，我们如何才能验证拿到的identityToken是否合法呢，这就要用到Apple提供的公钥了。公钥获取地址：<a target="_blank" rel="noopener" href="https://appleid.apple.com/auth/keys">https://appleid.apple.com/auth/keys</a><br>直接用GET请求就会得等一个数组Keys,也就是 JWK 列表。这也就意味着客户端向服务器提交的 identityToken 可能是用 keys 里面的特定某个 JWK 来进行加密的。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;keys&quot;</span><span class="punctuation">:</span><span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;kty&quot;</span><span class="punctuation">:</span><span class="string">&quot;RSA&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;kid&quot;</span><span class="punctuation">:</span><span class="string">&quot;86D88Kf&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;use&quot;</span><span class="punctuation">:</span><span class="string">&quot;sig&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;alg&quot;</span><span class="punctuation">:</span><span class="string">&quot;RS256&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;n&quot;</span><span class="punctuation">:</span><span class="string">&quot;iGaLqP6y-SJCCBq5Hv6pGDbG_SQ11MNjH7rWHcCFYz4hGwHC4lcSurTlV8u3avoVNM8jXevG1Iu1SY11qInqUvjJur--hghr1b56OPJu6H1iKulSxGjEIyDP6c5BdE1uwprYyr4IO9th8fOwCPygjLFrh44XEGbDIFeImwvBAGOhmMB2AD1n1KviyNsH0bEB7phQtiLk-ILjv1bORSRl8AK677-1T8isGfHKXGZ_ZGtStDe7Lu0Ihp8zoUt59kx2o9uWpROkzF56ypresiIl4WprClRCjz8x6cPZXU2qNWhu71TQvUFwvIvbkE1oYaJMb0jcOTmBRZA2QuYw-zHLwQ&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;e&quot;</span><span class="punctuation">:</span><span class="string">&quot;AQAB&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;kty&quot;</span><span class="punctuation">:</span><span class="string">&quot;RSA&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;kid&quot;</span><span class="punctuation">:</span><span class="string">&quot;eXaunmL&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;use&quot;</span><span class="punctuation">:</span><span class="string">&quot;sig&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;alg&quot;</span><span class="punctuation">:</span><span class="string">&quot;RS256&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;n&quot;</span><span class="punctuation">:</span><span class="string">&quot;4dGQ7bQK8LgILOdLsYzfZjkEAoQeVC_aqyc8GC6RX7dq_KvRAQAWPvkam8VQv4GK5T4ogklEKEvj5ISBamdDNq1n52TpxQwI2EqxSk7I9fKPKhRt4F8-2yETlYvye-2s6NeWJim0KBtOVrk0gWvEDgd6WOqJl_yt5WBISvILNyVg1qAAM8JeX6dRPosahRVDjA52G2X-Tip84wqwyRpUlq2ybzcLh3zyhCitBOebiRWDQfG26EH9lTlJhll-p_Dg8vAXxJLIJ4SNLcqgFeZe4OfHLgdzMvxXZJnPp_VgmkcpUdRotazKZumj6dBPcXI_XID4Z4Z3OM1KrZPJNdUhxw&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;e&quot;</span><span class="punctuation">:</span><span class="string">&quot;AQAB&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>接下来就需要我们确定当前的 identityToken 到底是使用哪个 JWK 来加密的，这样做可以避免批量生成证书，提升性能。找到keys数组中的kid和我们刚刚从Header中解析出来的kid相同的那个对象.那个就我们要用的publicKey.但是现在的publicKey格式不是我们要的PEM文件格式.所以要把数据再转一下格式.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// pem公钥</span><br><span class="line">-----BEGIN PUBLIC KEY-----</span><br><span class="line">MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8kGa1pSjbSYZVebtTRBLxBz5H</span><br><span class="line">4i2p/llLCrEeQhta5kaQu/RnvuER4W8oDH3+3iuIYW4VQAzyqFpwuzjkDI+17t5t</span><br><span class="line">0tyazyZ8JXw+KgXTxldMPEL95+qVhgXvwtihXC1c5oGbRlEDvDF6Sa53rcFVsYJ4</span><br><span class="line">ehde/zUxo6UvS7UrBQIDAQAB</span><br><span class="line">-----END PUBLIC KEY-----</span><br></pre></td></tr></table></figure>
+
+<p>我这里用的是<code>jwk-to-pem</code>包做的.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> jwkToPem = <span class="built_in">require</span>(<span class="string">&#x27;jwk-to-pem&#x27;</span>);</span><br><span class="line"><span class="keyword">async</span> <span class="title function_">getPublicKey</span>(<span class="params">kid</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> publicKey;</span><br><span class="line">    <span class="keyword">const</span> result = <span class="keyword">await</span> <span class="variable language_">this</span>.<span class="property">ctx</span>.<span class="title function_">curl</span>(<span class="string">&#x27;https://appleid.apple.com/auth/keys&#x27;</span>, &#123;</span><br><span class="line">        <span class="attr">method</span>: <span class="string">&#x27;GET&#x27;</span>,</span><br><span class="line">        <span class="attr">dataAsQueryString</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">dataType</span>: <span class="string">&#x27;json&#x27;</span>,</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">of</span> result.<span class="property">data</span>.<span class="property">keys</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (key.<span class="property">kid</span> === kid) &#123;</span><br><span class="line">            publicKey = key;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> pem = <span class="title function_">jwkToPem</span>(publicKey);</span><br><span class="line">    <span class="keyword">return</span> pem;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>获取PEM后再用JWT校验identityToken就可以了</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> header = identityToken.<span class="title function_">split</span>(<span class="string">&#x27;.&#x27;</span>)[<span class="number">0</span>];</span><br><span class="line">header = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="title class_">Base64</span>.<span class="title function_">decode</span>(header));</span><br><span class="line"><span class="keyword">const</span> publicKey = <span class="keyword">await</span> <span class="variable language_">this</span>.<span class="title function_">getPublicKey</span>(header.<span class="property">kid</span>);</span><br><span class="line"><span class="keyword">const</span> data = <span class="variable language_">this</span>.<span class="property">ctx</span>.<span class="property">app</span>.<span class="property">jwt</span>.<span class="title function_">verify</span>(identityToken, publicKey);</span><br></pre></td></tr></table></figure>
+
+<h2 id="第三步-业务逻辑处理"><a href="#第三步-业务逻辑处理" class="headerlink" title="第三步,业务逻辑处理"></a>第三步,业务逻辑处理</h2><p>使用user或者校验identityToken得到的sub作为唯一标识注册用户,这里最好还要缓存一下email，fullName字段,以免因为网络等原因在校验成功后没有注册用户,导致丢失数据.</p>
+<p>参考文档:<br><a target="_blank" rel="noopener" href="https://easeapi.com/blog/blog/88-sign-with-apple.html">大伟不是戴维 blog</a><br><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000020840290">segmentfault</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/10/LeetCode%E7%AC%94%E8%AE%B0/" rel="prev" title="LeetCode 笔记">
+      <i class="fa fa-chevron-left"></i> LeetCode 笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/24/%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1/" rel="next" title="网络通信基础">
+      网络通信基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%92%8CAppleServer%E4%BA%A4%E4%BA%92%E5%90%8E%E8%AF%B7%E6%B1%82%E5%90%8E%E7%AB%AF"><span class="nav-number">2.</span> <span class="nav-text">第一步,客户端和AppleServer交互后请求后端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%EF%BC%9A%E5%BD%93%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%AE%A4%E8%AF%81%E6%88%90%E5%8A%9F%E4%B9%8B%E5%90%8E%EF%BC%8C%E5%B0%86%E4%B8%8D%E4%BC%9A%E5%86%8D%E8%BF%94%E5%9B%9Eemail%EF%BC%8CfullName%E7%AD%89%E4%BF%A1%E6%81%AF%EF%BC%8C%E5%8F%AF%E4%BB%A5%E5%9C%A8%E8%AE%BE%E7%BD%AE-gt-Apple-ID-gt-%E5%AF%86%E7%A0%81%E4%B8%8E%E5%AE%89%E5%85%A8%E6%80%A7-gt-%E4%BD%BF%E7%94%A8%E6%82%A8AppleID%E7%9A%84App-%E4%B8%AD%E5%88%A0%E9%99%A4%E5%AF%B9%E5%BA%94%E7%9A%84APP%E3%80%82"><span class="nav-number">2.1.</span> <span class="nav-text">注意：当第一次认证成功之后，将不会再返回email，fullName等信息，可以在设置-&gt;Apple ID-&gt;密码与安全性-&gt;使用您AppleID的App 中删除对应的APP。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E5%90%8E%E7%AB%AF%E6%A0%A1%E9%AA%8CidentityToken%E5%90%88%E6%B3%95%E6%80%A7"><span class="nav-number">3.</span> <span class="nav-text">第二步,后端校验identityToken合法性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5-%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">第三步,业务逻辑处理</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

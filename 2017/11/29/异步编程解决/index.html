@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="首先是使用Promise。Promise是为了能更好的管理回调函数。1234567const func &#x3D; (val) &#x3D;&gt; &amp;#123;  return new Promise ((resolve, reject) &#x3D;&gt; &amp;#123;    doSomething()    resolve(data)&#x2F;&#x2F;成功    reject(data)&#x2F;&#x2F;失败  &amp;#125;)&amp;#125;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS 异步编程解决方案">
+<meta property="og:url" content="http://hwl.me/2017/11/29/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E8%A7%A3%E5%86%B3/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="首先是使用Promise。Promise是为了能更好的管理回调函数。1234567const func &#x3D; (val) &#x3D;&gt; &amp;#123;  return new Promise ((resolve, reject) &#x3D;&gt; &amp;#123;    doSomething()    resolve(data)&#x2F;&#x2F;成功    reject(data)&#x2F;&#x2F;失败  &amp;#125;)&amp;#125;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-11-29T08:20:13.000Z">
+<meta property="article:modified_time" content="2017-11-29T10:29:24.000Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hwl.me/2017/11/29/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E8%A7%A3%E5%86%B3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JS 异步编程解决方案 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2017/11/29/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E8%A7%A3%E5%86%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JS 异步编程解决方案
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2017-11-29 16:20:13 / 修改时间：18:29:24" itemprop="dateCreated datePublished" datetime="2017-11-29T16:20:13+08:00">2017-11-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/11/29/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E8%A7%A3%E5%86%B3/" class="post-meta-item leancloud_visitors" data-flag-title="JS 异步编程解决方案" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2017/11/29/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E8%A7%A3%E5%86%B3/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2017/11/29/%E5%BC%82%E6%AD%A5%E7%BC%96%E7%A8%8B%E8%A7%A3%E5%86%B3/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="首先是使用Promise。Promise是为了能更好的管理回调函数。"><a href="#首先是使用Promise。Promise是为了能更好的管理回调函数。" class="headerlink" title="首先是使用Promise。Promise是为了能更好的管理回调函数。"></a>首先是使用Promise。Promise是为了能更好的管理回调函数。</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">func</span> = (<span class="params">val</span>) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span> (<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">doSomething</span>()</span><br><span class="line">    <span class="title function_">resolve</span>(data)<span class="comment">//成功</span></span><br><span class="line">    <span class="title function_">reject</span>(data)<span class="comment">//失败</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>这里的resolve和reject的data是返回给.then(data)中的data，意思就和return数据给下一个函数作为参数一样。完成链式调用。比如</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">func</span>(val).<span class="title function_">then</span>(<span class="function"><span class="params">dat</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">//这里的dat就是resolve来的data</span></span><br><span class="line">&#125;).<span class="title function_">catch</span>(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(err)</span><br><span class="line">&#125;)</span><br><span class="line"><span class="comment">//而reject的错误一般是用.catch()捕获然后再处理，也可以在catch里继续reject(err)给后面.catch(err)来处理。</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>不要在循环内部直接做异步操作，否则根本拿不到数据，循环就结束了</strong><br>如果一定要做循环可以使用async.each或者使用Promise.all()</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span>.<span class="title function_">each</span>(record, <span class="function">(<span class="params">item, callback</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">let</span> result = &#123;&#125;;</span><br><span class="line">  result.<span class="property">title</span> = item.<span class="title function_">get</span>(<span class="string">&#x27;auction&#x27;</span>).<span class="title function_">get</span>(<span class="string">&#x27;title&#x27;</span>);</span><br><span class="line">  result.<span class="property">imgUrls</span> = item.<span class="title function_">get</span>(<span class="string">&#x27;auction&#x27;</span>).<span class="title function_">get</span>(<span class="string">&#x27;imgUrls&#x27;</span>);</span><br><span class="line">  <span class="title function_">find</span>(item.<span class="title function_">get</span>(<span class="string">&#x27;auction&#x27;</span>).<span class="title function_">get</span>(<span class="string">&#x27;objectId&#x27;</span>))<span class="comment">//把异步操作封装成一个Promise的方法对象</span></span><br><span class="line">    .<span class="title function_">then</span>(<span class="function"><span class="params">userId</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (userId === item.<span class="title function_">get</span>(<span class="string">&#x27;userId&#x27;</span>)) &#123;</span><br><span class="line">        result.<span class="property">status</span> = <span class="number">1</span>;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        result.<span class="property">status</span> = <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      result.<span class="property">heyzNum</span> = item.<span class="title function_">get</span>(<span class="string">&#x27;heyzNum&#x27;</span>);</span><br><span class="line">      result.<span class="property">time</span> = <span class="title function_">formatTime</span>(item.<span class="title function_">get</span>(<span class="string">&#x27;createdAt&#x27;</span>));</span><br><span class="line">      data.<span class="title function_">push</span>(result);</span><br><span class="line">      <span class="title function_">callback</span>();</span><br><span class="line">    &#125;).<span class="title function_">catch</span>(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">callback</span>(err);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;, <span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (err) &#123;</span><br><span class="line">    <span class="title function_">reject</span>(err);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="title function_">resolve</span>(data);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>使用Promise.all<br>但是如果这个promise队列里出现了reject，那么Promise.all()返回的结果会被一个reject而报销（其他正常返回也没用了）<br>Promise.all会把参数数组里的每个Promise的resolve都返回给下来then(results &#x3D;&gt; {})中的results，会按顺序输出，以最后一个Promise完成为标志，进入then()<br><strong>如果放在 Promise.all(promiseArr)中的 Promise 没有resolve, 那么 Promise.all 也无法运行</strong><br><a target="_blank" rel="noopener" href="http://www.cnblogs.com/lvdabao/p/es6-promise-1.html">Promise例子</a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">getActivitiesByCouponsAndModel</span> = (<span class="params">activityModel</span>) =&gt;</span><br><span class="line">  <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> newObj = <span class="title class_">Object</span>.<span class="title function_">assign</span>(&#123;&#125;, activityModel);</span><br><span class="line">    <span class="keyword">const</span> result = [];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; activityModel.<span class="property">length</span>; i++) &#123;</span><br><span class="line">      result.<span class="title function_">push</span>(<span class="title function_">mixCouponInfoById</span>(activityModel[i].<span class="property">couponLists</span>, newObj[i]));<span class="comment">//mixCouponInfoById也是个返回Promise对象的方法，然后把Promise对象全部push到数组里。</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">Promise</span>.<span class="title function_">all</span>(result)</span><br><span class="line">    .<span class="title function_">then</span>(<span class="function"><span class="params">r</span> =&gt;</span> <span class="title function_">resolve</span>(&#123;</span><br><span class="line">      <span class="attr">success</span>: <span class="literal">true</span>,</span><br><span class="line">      <span class="attr">data</span>: r</span><br><span class="line">    &#125;))</span><br><span class="line">    .<span class="title function_">catch</span>(<span class="function"><span class="params">e</span> =&gt;</span> <span class="title function_">reject</span>(&#123;</span><br><span class="line">      <span class="attr">error</span>: <span class="number">500</span>,</span><br><span class="line">      <span class="attr">message</span>: e</span><br><span class="line">    &#125;));</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="总的来说，async-each的逻辑更符合同步编程的逻辑，promise-all呢返回的是之前promises数组分别执行完的结果的数组，在后续的数据处理上可能比较麻烦"><a href="#总的来说，async-each的逻辑更符合同步编程的逻辑，promise-all呢返回的是之前promises数组分别执行完的结果的数组，在后续的数据处理上可能比较麻烦" class="headerlink" title="总的来说，async.each的逻辑更符合同步编程的逻辑，promise.all呢返回的是之前promises数组分别执行完的结果的数组，在后续的数据处理上可能比较麻烦"></a>总的来说，async.each的逻辑更符合同步编程的逻辑，promise.all呢返回的是之前promises数组分别执行完的结果的数组，在后续的数据处理上可能比较麻烦</h2>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/29/YAML/" rel="prev" title="YAML">
+      <i class="fa fa-chevron-left"></i> YAML
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/29/js%20%E5%8E%9F%E5%9E%8B%E5%92%8C%E5%8E%9F%E5%9E%8B%E9%93%BE/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A6%96%E5%85%88%E6%98%AF%E4%BD%BF%E7%94%A8Promise%E3%80%82Promise%E6%98%AF%E4%B8%BA%E4%BA%86%E8%83%BD%E6%9B%B4%E5%A5%BD%E7%9A%84%E7%AE%A1%E7%90%86%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%E3%80%82"><span class="nav-number">1.</span> <span class="nav-text">首先是使用Promise。Promise是为了能更好的管理回调函数。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%9A%84%E6%9D%A5%E8%AF%B4%EF%BC%8Casync-each%E7%9A%84%E9%80%BB%E8%BE%91%E6%9B%B4%E7%AC%A6%E5%90%88%E5%90%8C%E6%AD%A5%E7%BC%96%E7%A8%8B%E7%9A%84%E9%80%BB%E8%BE%91%EF%BC%8Cpromise-all%E5%91%A2%E8%BF%94%E5%9B%9E%E7%9A%84%E6%98%AF%E4%B9%8B%E5%89%8Dpromises%E6%95%B0%E7%BB%84%E5%88%86%E5%88%AB%E6%89%A7%E8%A1%8C%E5%AE%8C%E7%9A%84%E7%BB%93%E6%9E%9C%E7%9A%84%E6%95%B0%E7%BB%84%EF%BC%8C%E5%9C%A8%E5%90%8E%E7%BB%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8A%E5%8F%AF%E8%83%BD%E6%AF%94%E8%BE%83%E9%BA%BB%E7%83%A6"><span class="nav-number"></span> <span class="nav-text">总的来说，async.each的逻辑更符合同步编程的逻辑，promise.all呢返回的是之前promises数组分别执行完的结果的数组，在后续的数据处理上可能比较麻烦</span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

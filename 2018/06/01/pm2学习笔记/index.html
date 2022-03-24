@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="pm2学习笔记pm2 有一个很好看的 web 管理应用keymetrics安装了 pm2以后，到这个网站上注册账号，并用他给的 pm2 link xxx xxxx就把当前电脑的pm2管理的进程情况输出到这个网站上了 基本指令npm install pm2 -g ： 全局安装。 --watch 是监控项目的所有文件,一旦有改变就重启服务器,像nodemon 一样">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PM2学习-2018-06-01">
+<meta property="og:url" content="http://hwl.me/2018/06/01/pm2%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="pm2学习笔记pm2 有一个很好看的 web 管理应用keymetrics安装了 pm2以后，到这个网站上注册账号，并用他给的 pm2 link xxx xxxx就把当前电脑的pm2管理的进程情况输出到这个网站上了 基本指令npm install pm2 -g ： 全局安装。 --watch 是监控项目的所有文件,一旦有改变就重启服务器,像nodemon 一样">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://p04c6djlz.bkt.clouddn.com//1527824401376.jpg">
+<meta property="article:published_time" content="2018-06-01T03:34:33.000Z">
+<meta property="article:modified_time" content="2019-03-07T07:32:24.000Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://p04c6djlz.bkt.clouddn.com//1527824401376.jpg">
+
+<link rel="canonical" href="http://hwl.me/2018/06/01/pm2%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>PM2学习-2018-06-01 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2018/06/01/pm2%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PM2学习-2018-06-01
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-01 11:34:33" itemprop="dateCreated datePublished" datetime="2018-06-01T11:34:33+08:00">2018-06-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-03-07 15:32:24" itemprop="dateModified" datetime="2019-03-07T15:32:24+08:00">2019-03-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93/" itemprop="url" rel="index"><span itemprop="name">个人总结</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/06/01/pm2%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="PM2学习-2018-06-01" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/06/01/pm2%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/06/01/pm2%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="pm2学习笔记"><a href="#pm2学习笔记" class="headerlink" title="pm2学习笔记"></a>pm2学习笔记</h1><h2 id="pm2-有一个很好看的-web-管理应用"><a href="#pm2-有一个很好看的-web-管理应用" class="headerlink" title="pm2 有一个很好看的 web 管理应用"></a>pm2 有一个很好看的 web 管理应用</h2><p><a target="_blank" rel="noopener" href="https://app.keymetrics.io/">keymetrics</a><br>安装了 pm2以后，到这个网站上注册账号，并用他给的 <code>pm2 link xxx xxxx</code>就把当前电脑的pm2管理的进程情况输出到这个网站上了<br><img src="http://p04c6djlz.bkt.clouddn.com//1527824401376.jpg"></p>
+<h2 id="基本指令"><a href="#基本指令" class="headerlink" title="基本指令"></a>基本指令</h2><p><code>npm install pm2 -g</code> ： 全局安装。 <code>--watch 是监控项目的所有文件,一旦有改变就重启服务器,像nodemon 一样</code></p>
+<span id="more"></span>
+<p><code>pm2 start app.js</code> ： 启动服务，入口文件是app.js。<br><code>pm2 start app.js -i [n] --name [name]</code> ： 启动n个进程，名字命名为name。<br><code>pm2 start app.js -i max</code> 使用负载均衡的模式启动程序, <strong>cluster mode 模式,max 是指服务器有多少个 CPU 就启动多少个应用实例,进行负载均衡,尽最大程度使用 CPU</strong><br><code>pm2 serve path port</code>  运行一个静态文件目录,<strong>路径应该是一个文件夹,而不是文件,然后在 <code>localhost:port/文件</code>访问</strong><br><code>npm restart [name or id]</code> ： 重启服务。<br><code>npm reload [name or id]</code> ： 和rastart功能相同，但是可以实现0s的无缝衔接；如果有nginx的使用经验，可以对比nginx reload指令。<br><code>pm2 start app.js --max_memory_restart 1024M</code> ： 当内存超过1024M时自动重启。 如果工程中有比较棘手的内存泄露问题，这个算是一个折中方案。<br><code>pm2 monit</code> ： 对服务进行监控。</p>
+<p>更多的指令可以参考 <a target="_blank" rel="noopener" href="https://www.douban.com/note/314200231/">PM2 介绍</a></p>
+<h2 id="高级用法-ecosystem"><a href="#高级用法-ecosystem" class="headerlink" title="高级用法 ecosystem"></a>高级用法 ecosystem</h2><p>pm2支持配置文件启动：<br><code>pm2 ecosystem</code>： 生成配置文件<code>ecosystem.json</code><br><code>pm2 startOrRestart /file/path/ecosystem.json</code> : 通过配置文件启动服务</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Application configuration section</span></span><br><span class="line"><span class="comment">   * http://pm2.keymetrics.io/docs/usage/application-declaration/</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  apps : [</span><br><span class="line">    <span class="comment">// First application</span></span><br><span class="line">    &#123;</span><br><span class="line">      name      : <span class="string">&#x27;mongoDB&#x27;</span>,</span><br><span class="line">      script    : <span class="string">&#x27;mongod&#x27;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// Second application</span></span><br><span class="line">    &#123;</span><br><span class="line">      name      : <span class="string">&#x27;iot_api&#x27;</span>,</span><br><span class="line">      script    : <span class="string">&#x27;./seeed_IOT/seeed_iot_api/bin/www&#x27;</span>,</span><br><span class="line">      <span class="attr">env</span>: &#123;</span><br><span class="line">        <span class="attr">NODE_ENV</span>: <span class="string">&#x27;release&#x27;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      env_production : &#123;</span><br><span class="line">        <span class="attr">NODE_ENV</span>: <span class="string">&#x27;release&#x27;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">watch</span>: <span class="literal">true</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">    	<span class="attr">name</span>: <span class="string">&#x27;message server&#x27;</span>,</span><br><span class="line">    	<span class="attr">script</span>: <span class="string">&#x27;./seeed_IOT/seeed_message_server/bin/www&#x27;</span>,</span><br><span class="line">    	<span class="attr">env</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;NODE_ENV&#x27;</span>: <span class="string">&#x27;release&#x27;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      env_production : &#123;</span><br><span class="line">        <span class="attr">NODE_ENV</span>: <span class="string">&#x27;release&#x27;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">watch</span>: <span class="literal">true</span>,</span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * Deployment section</span></span><br><span class="line"><span class="comment">   * http://pm2.keymetrics.io/docs/usage/deployment/</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  deploy : &#123;</span><br><span class="line">    <span class="comment">// production : &#123;</span></span><br><span class="line">    <span class="comment">//   user : &#x27;node&#x27;,  // 登录远程服务器的用户名，此处填写我们创建的hwl</span></span><br><span class="line">    <span class="comment">//   host : &#x27;212.83.163.1&#x27;, // 服务器 IP</span></span><br><span class="line">    <span class="comment">//   ref  : &#x27;origin/master&#x27;, // git 地址及分支</span></span><br><span class="line">    <span class="comment">//   repo : &#x27;git@github.com:repo.git&#x27;, // git 仓库地址</span></span><br><span class="line">    <span class="comment">//   path : &#x27;/var/www/production&#x27;, // 服务器路径</span></span><br><span class="line">    <span class="comment">//   &#x27;post-deploy&#x27; : &#x27;npm install &amp;&amp; pm2 reload ecosystem.config.js --env production&#x27;</span></span><br><span class="line">    <span class="comment">// &#125;,</span></span><br><span class="line">    <span class="comment">// dev : &#123;</span></span><br><span class="line">    <span class="comment">//   user : &#x27;node&#x27;,</span></span><br><span class="line">    <span class="comment">//   host : &#x27;212.83.163.1&#x27;,</span></span><br><span class="line">    <span class="comment">//   ref  : &#x27;origin/master&#x27;,</span></span><br><span class="line">    <span class="comment">//   repo : &#x27;git@github.com:repo.git&#x27;,</span></span><br><span class="line">    <span class="comment">//   path : &#x27;/var/www/development&#x27;,</span></span><br><span class="line">    <span class="comment">//   &#x27;post-deploy&#x27; : &#x27;npm install &amp;&amp; pm2 reload ecosystem.config.js --env dev&#x27;,</span></span><br><span class="line">    <span class="comment">//   env  : &#123;</span></span><br><span class="line">    <span class="comment">//     NODE_ENV: &#x27;dev&#x27;</span></span><br><span class="line">    <span class="comment">//   &#125;</span></span><br><span class="line">    <span class="comment">// &#125;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>配置项:</p>
+<ol>
+<li>name  应用进程名称；</li>
+<li>script  启动脚本路径；</li>
+<li>cwd  应用启动的路径，关于script与cwd的区别举例说明：在&#x2F;home&#x2F;polo&#x2F;目录下运行&#x2F;data&#x2F;release&#x2F;node&#x2F;index.js，此处script为&#x2F;data&#x2F;release&#x2F;node&#x2F;index.js，cwd为&#x2F;home&#x2F;polo&#x2F;；</li>
+<li>args  传递给脚本的参数；</li>
+<li>interpreter  指定的脚本解释器；</li>
+<li>interpreter_args  传递给解释器的参数；</li>
+<li>instances  应用启动实例个数，仅在cluster模式有效，默认为fork；</li>
+<li>exec_mode  应用启动模式，支持fork和cluster模式；</li>
+<li>watch  监听重启，启用情况下，文件夹或子文件夹下变化应用自动重启；</li>
+<li>ignore_watch  忽略监听的文件夹，支持正则表达式；</li>
+<li>max_memory_restart  最大内存限制数，超出自动重启；</li>
+<li>env  环境变量，object类型，如{“NODE_ENV”:”production”, “ID”: “42”}；</li>
+<li>log_date_format  指定日志日期格式，如YYYY-MM-DD HH:mm:ss；</li>
+<li>error_file  记录标准错误流，$HOME&#x2F;.pm2&#x2F;logs&#x2F;XXXerr.log)，代码错误可在此文件查找；</li>
+<li>out_file  记录标准输出流，$HOME&#x2F;.pm2&#x2F;logs&#x2F;XXXout.log)，如应用打印大量的标准输出，会导致pm2日志过大；</li>
+<li>min_uptime  应用运行少于时间被认为是异常启动；</li>
+<li>max_restarts  最大异常重启次数，即小于min_uptime运行时间重启次数；</li>
+<li>autorestart  默认为true, 发生异常的情况下自动重启；</li>
+<li>cron_restart  crontab时间格式重启应用，目前只支持cluster模式；</li>
+<li>force  默认false，如果true，可以重复启动一个脚本。pm2不建议这么做；</li>
+<li>restart_delay  异常重启情况下，延时重启时间；</li>
+</ol>
+<h2 id="本地pm2的ecosystem配置"><a href="#本地pm2的ecosystem配置" class="headerlink" title="本地pm2的ecosystem配置"></a>本地pm2的ecosystem配置</h2><p>在本地的目标应用下，输入：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pm2 ecosystem</span><br></pre></td></tr></table></figure>
+
+<p>生成pm2的部署配置模板文件如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  /**</span><br><span class="line">   * Application configuration section</span><br><span class="line">   * PM2 - Application Declaration</span><br><span class="line">   */</span><br><span class="line">  apps : [</span><br><span class="line">    // First application</span><br><span class="line">    &#123;</span><br><span class="line">      name      : &quot;API&quot;,</span><br><span class="line">      script    : &quot;app.js&quot;,</span><br><span class="line">      env: &#123;</span><br><span class="line">        COMMON_VARIABLE: &quot;true&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      env_production : &#123;</span><br><span class="line">        NODE_ENV: &quot;production&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    // Second application</span><br><span class="line">    &#123;</span><br><span class="line">      name      : &quot;WEB&quot;,</span><br><span class="line">      script    : &quot;web.js&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  /**</span><br><span class="line">   * Deployment section</span><br><span class="line">   * PM2 - Deployment</span><br><span class="line">   */</span><br><span class="line">  deploy : &#123;</span><br><span class="line">    production : &#123;</span><br><span class="line">### ### ##       user : &quot;node&quot;,</span><br><span class="line">      host : &quot;212.83.163.1&quot;,</span><br><span class="line">      ref  : &quot;origin/master&quot;,</span><br><span class="line">      repo : &quot;git@github.com:repo.git&quot;,</span><br><span class="line">      path : &quot;/var/www/production&quot;,</span><br><span class="line">      &quot;post-deploy&quot; : &quot;npm install &amp;&amp; pm2 startOrRestart ecosystem.json --env production&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    dev : &#123;</span><br><span class="line">      user : &quot;node&quot;,</span><br><span class="line">      host : &quot;212.83.163.1&quot;,</span><br><span class="line">      ref  : &quot;origin/master&quot;,</span><br><span class="line">      repo : &quot;git@github.com:repo.git&quot;,</span><br><span class="line">      path : &quot;/var/www/development&quot;,</span><br><span class="line">      &quot;post-deploy&quot; : &quot;npm install &amp;&amp; pm2 startOrRestart ecosystem.json --env dev&quot;,</span><br><span class="line">      env  : &#123;</span><br><span class="line">        NODE_ENV: &quot;dev&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>应为目前我们仅部署一个应用，因此，先把不必要的信息删除，即删除apps部分的第二项。同时把我们的目标文件改为你应用的入口文件，此处修改为Express.js的默认设置，即：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">script    <span class="punctuation">:</span> <span class="string">&quot;./bin/www&quot;</span><span class="punctuation">,</span></span><br></pre></td></tr></table></figure>
+
+<p>apps部分就设置完毕了，然后再设置deploy部分。其中production用于生产环境，dev用于开发环境，为了演示，我们只设置production部分。</p>
+<p>下面依次介绍各个设置：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">production : &#123;</span><br><span class="line">  user : &quot;登录远程服务器的用户名，此处填写我们创建的yishi&quot;,</span><br><span class="line">  host : &quot;远程服务器的IP或hostname，此处可以是数组同步部署多个服务器，不过鉴于我们只有一个服务器，因此我们填写123.57.205.23&quot;,</span><br><span class="line">  ref  : &quot;远端名称及分支名，此处填写origin/master&quot;,</span><br><span class="line">  repo : &quot;git仓库地址，此处填写git@github.com:e10101/pm2app.git&quot;,</span><br><span class="line">  path : &quot;远程服务器部署目录，需要填写user具备写入权限的目录，此处填写/home/yishi/www/production&quot;,</span><br><span class="line">  &quot;post-deploy&quot; : &quot;部署后需要执行的命令，此处填写npm install &amp;&amp; pm2 startOrRestart ecosystem.json --env production&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>整理后，按照我们的设置，应为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">production: &#123;</span><br><span class="line">  user: &quot;yishi&quot;,</span><br><span class="line">  host: &quot;123.57.205.23&quot;,</span><br><span class="line">  ref: &quot;origin/master&quot;,</span><br><span class="line">  repo: &quot;git@github.com:e10101/pm2app.git&quot;,</span><br><span class="line">  path: &quot;/home/yishi/www/production&quot;,</span><br><span class="line">  &quot;post-deploy&quot;: &quot;npm install &amp;&amp; pm2 startOrRestart ecosystem.json --env production&quot;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<p>因为pm2的部署是通过ssh进行的，因此需要开通本地到远程服务器的无密码登录，同样，在Mac下，通过ssh-keygen生成RSA公钥，并拷贝到远程服务器：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp ~/.ssh/id_rsa.pub yishi@123.57.205.23:/home/yishi/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<p>上述命令中的yishi为用户名，执行时需要替换为你设置的用户名。</p>
+<p>设置ssh完毕后，再看看整理完毕的ecosystem配置文件，如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  /**</span><br><span class="line">   * Application configuration section</span><br><span class="line">   * PM2 - Application Declaration</span><br><span class="line">   */</span><br><span class="line">  apps : [</span><br><span class="line">    // First application</span><br><span class="line">    &#123;</span><br><span class="line">      name      : &quot;pm2app&quot;,</span><br><span class="line">      script    : &quot;./bin/www&quot;,</span><br><span class="line">      env: &#123;</span><br><span class="line">        COMMON_VARIABLE: &quot;true&quot;</span><br><span class="line">      &#125;,</span><br><span class="line">      env_production : &#123;</span><br><span class="line">        NODE_ENV: &quot;production&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  /**</span><br><span class="line">   * Deployment section</span><br><span class="line">   * PM2 - Deployment</span><br><span class="line">   */</span><br><span class="line">  deploy : &#123;</span><br><span class="line">    production : &#123;</span><br><span class="line">      user: &quot;yishi&quot;,</span><br><span class="line">      host: &quot;123.57.205.23&quot;,</span><br><span class="line">      ref: &quot;origin/master&quot;,</span><br><span class="line">      repo: &quot;git@github.com:e10101/pm2app.git&quot;,</span><br><span class="line">      path: &quot;/home/yishi/www/production&quot;,</span><br><span class="line">      &quot;post-deploy&quot;: &quot;npm install &amp;&amp; pm2 startOrRestart ecosystem.json --env production&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在本地应用目录下，执行pm2 deploy命令：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pm2 deploy ecosystem.json production setup</span><br></pre></td></tr></table></figure>
+
+<p>提示错误：</p>
+<blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Host key verification failed.</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line">Please make sure you have the correct access rights and the repository exists.</span><br><span class="line">  failed to clone</span><br><span class="line">Deploy failed</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>此时主要是在远程服务器中，并未将<a href="https://link.zhihu.com/?target=http://github.com">http://github.com</a>加入known_hosts，在服务器端通过如下命令设置：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keyscan -t rsa github.com &gt;&gt; ~/.ssh/known_hosts</span><br></pre></td></tr></table></figure>
+
+<p>在本地继续执行部署命令：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pm2 deploy ecosystem.json production setup</span><br></pre></td></tr></table></figure>
+
+<p>此时，如无其他问题，输出应提示：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">  ○ setup complete</span><br><span class="line">--&gt; Success</span><br></pre></td></tr></table></figure>
+
+<p>至此，pm2的部署设置完毕。</p>
+<h2 id="pm2部署"><a href="#pm2部署" class="headerlink" title="pm2部署"></a>pm2部署</h2><p>pm2的部署设置完毕后，接下来就是实际部署了。</p>
+<p>在部署前，现将本地代码修改并进行git提交：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m &quot;update ecosystem&quot;</span><br><span class="line">git push</span><br></pre></td></tr></table></figure>
+
+<p>提交后，在本地应用目录，输入如下命令进行生产环境的部署：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pm2 deploy ecosystem.json production</span><br></pre></td></tr></table></figure>
+
+<p>可以看到如下输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[PM2][WARN] Applications pm2app not running, starting...</span><br><span class="line">[PM2] App [pm2app] launched (1 instances)</span><br><span class="line">┌──────────┬────┬──────┬──────┬────────┬─────────┬────────┬─────────────┬──────────┐</span><br><span class="line">│ App name │ id │ mode │ pid  │ status │ restart │ uptime │ memory      │ watching │</span><br><span class="line">├──────────┼────┼──────┼──────┼────────┼─────────┼────────┼─────────────┼──────────┤</span><br><span class="line">│ pm2app   │ 0  │ fork │ 1028 │ online │ 0       │ 0s     │ 11.246 MB   │ disabled │</span><br><span class="line">└──────────┴────┴──────┴──────┴────────┴─────────┴────────┴─────────────┴──────────┘</span><br><span class="line"> Use `pm2 show &lt;id|name&gt;` to get more details about an app</span><br><span class="line">  ○ hook test</span><br><span class="line">  ○ successfully deployed origin/master</span><br><span class="line">--&gt; Success</span><br></pre></td></tr></table></figure>
+
+<p>部署成功，在远程服务器查看端口情况：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">netstat -antp</span><br></pre></td></tr></table></figure>
+
+<p>可以看到应用默认部署的3000端口已经开放了。通过浏览器打开：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://123.57.205.23:3000/</span><br></pre></td></tr></table></figure>
+
+<p>可以看到部署的Web应用可以访问了。（如果netstat -antp中可见3000端口可访问，可以检查下ECS的防火墙设置，确保3000端口对外开放）</p>
+<h2 id="pm2其他命令"><a href="#pm2其他命令" class="headerlink" title="pm2其他命令"></a>pm2其他命令</h2><p>应用列表：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pm2 list</span><br></pre></td></tr></table></figure>
+
+<p>应用信息（查看应用编号为0的信息）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pm2 show 0 </span><br></pre></td></tr></table></figure>
+
+<h2 id="（重要）服务器端设置pm2开机自动启动"><a href="#（重要）服务器端设置pm2开机自动启动" class="headerlink" title="（重要）服务器端设置pm2开机自动启动"></a>（重要）服务器端设置pm2开机自动启动</h2><p>开启启动设置，此处是CentOS系统，其他系统替换最后一个选项（可选项：ubuntu, centos, redhat, gentoo, systemd, darwin, amazon）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pm2 startup centos</span><br></pre></td></tr></table></figure>
+
+<p>然后按照提示需要输入的命令进行输入：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo su -c &quot;env PATH=$PATH:/usr/bin pm2 startup centos -u yishi --hp /home/yishi&quot;</span><br></pre></td></tr></table></figure>
+
+<p>保存pm2设置：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pm2 save</span><br></pre></td></tr></table></figure>
+
+<p>现在重新启动系统，测试是否可以开机启动：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+
+<p>等系统重启后，通过浏览器检查系统是否自动启动：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://123.57.205.23:3000/</span><br></pre></td></tr></table></figure>
+
+<p>如果启动正常，说明设置成功！</p>
+<p><strong>以上就是如何通过pm2部署Node应用到服务器生成环境的总结。</strong></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/05/31/%E5%8F%98%E9%87%8F%E9%A9%BC%E5%B3%B0%E5%91%BD%E5%90%8D%E8%BD%AC%E4%B8%8B%E5%88%92%E7%BA%BF%E5%91%BD%E5%90%8D%E7%9A%84%E4%B8%80%E4%B8%AA%E6%96%B9%E6%B3%95/" rel="prev" title="JavaScript 变量驼峰命名转下划线命名">
+      <i class="fa fa-chevron-left"></i> JavaScript 变量驼峰命名转下划线命名
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/04/Mosca/" rel="next" title="Mosca 介绍">
+      Mosca 介绍 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#pm2%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0"><span class="nav-number">1.</span> <span class="nav-text">pm2学习笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pm2-%E6%9C%89%E4%B8%80%E4%B8%AA%E5%BE%88%E5%A5%BD%E7%9C%8B%E7%9A%84-web-%E7%AE%A1%E7%90%86%E5%BA%94%E7%94%A8"><span class="nav-number">1.1.</span> <span class="nav-text">pm2 有一个很好看的 web 管理应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4"><span class="nav-number">1.2.</span> <span class="nav-text">基本指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E7%94%A8%E6%B3%95-ecosystem"><span class="nav-number">1.3.</span> <span class="nav-text">高级用法 ecosystem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0pm2%E7%9A%84ecosystem%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.</span> <span class="nav-text">本地pm2的ecosystem配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pm2%E9%83%A8%E7%BD%B2"><span class="nav-number">1.5.</span> <span class="nav-text">pm2部署</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pm2%E5%85%B6%E4%BB%96%E5%91%BD%E4%BB%A4"><span class="nav-number">1.6.</span> <span class="nav-text">pm2其他命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%EF%BC%88%E9%87%8D%E8%A6%81%EF%BC%89%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E8%AE%BE%E7%BD%AEpm2%E5%BC%80%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%90%AF%E5%8A%A8"><span class="nav-number">1.7.</span> <span class="nav-text">（重要）服务器端设置pm2开机自动启动</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

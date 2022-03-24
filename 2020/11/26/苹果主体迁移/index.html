@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="苹果App主体迁移苹果App主体迁移-苹果登录迁移流程图![](https:&#x2F;&#x2F;hwl-1255548986.cos.ap-guangzhou.myqcloud.com&#x2F;hwl.me苹果主体迁移 流程图 .png) 迁移前操作 获取苹果转移标识符 transfer_sub 苹果官方文档  客户端提供参数： client_id team_id key_id 苹果p8文件 recipient_team">
+<meta property="og:type" content="article">
+<meta property="og:title" content="苹果App主体迁移">
+<meta property="og:url" content="http://hwl.me/2020/11/26/%E8%8B%B9%E6%9E%9C%E4%B8%BB%E4%BD%93%E8%BF%81%E7%A7%BB/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="苹果App主体迁移苹果App主体迁移-苹果登录迁移流程图![](https:&#x2F;&#x2F;hwl-1255548986.cos.ap-guangzhou.myqcloud.com&#x2F;hwl.me苹果主体迁移 流程图 .png) 迁移前操作 获取苹果转移标识符 transfer_sub 苹果官方文档  客户端提供参数： client_id team_id key_id 苹果p8文件 recipient_team">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-26T08:34:28.463Z">
+<meta property="article:modified_time" content="2020-12-08T10:26:35.884Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hwl.me/2020/11/26/%E8%8B%B9%E6%9E%9C%E4%B8%BB%E4%BD%93%E8%BF%81%E7%A7%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>苹果App主体迁移 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2020/11/26/%E8%8B%B9%E6%9E%9C%E4%B8%BB%E4%BD%93%E8%BF%81%E7%A7%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          苹果App主体迁移
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-26 16:34:28" itemprop="dateCreated datePublished" datetime="2020-11-26T16:34:28+08:00">2020-11-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-08 18:26:35" itemprop="dateModified" datetime="2020-12-08T18:26:35+08:00">2020-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/11/26/%E8%8B%B9%E6%9E%9C%E4%B8%BB%E4%BD%93%E8%BF%81%E7%A7%BB/" class="post-meta-item leancloud_visitors" data-flag-title="苹果App主体迁移" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/26/%E8%8B%B9%E6%9E%9C%E4%B8%BB%E4%BD%93%E8%BF%81%E7%A7%BB/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/26/%E8%8B%B9%E6%9E%9C%E4%B8%BB%E4%BD%93%E8%BF%81%E7%A7%BB/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="苹果App主体迁移"><a href="#苹果App主体迁移" class="headerlink" title="苹果App主体迁移"></a>苹果App主体迁移</h1><h2 id="苹果App主体迁移-苹果登录"><a href="#苹果App主体迁移-苹果登录" class="headerlink" title="苹果App主体迁移-苹果登录"></a>苹果App主体迁移-苹果登录</h2><h2 id="迁移流程图"><a href="#迁移流程图" class="headerlink" title="迁移流程图"></a>迁移流程图</h2><p>![](<a target="_blank" rel="noopener" href="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me%E8%8B%B9%E6%9E%9C%E4%B8%BB%E4%BD%93%E8%BF%81%E7%A7%BB">https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me苹果主体迁移</a> 流程图 .png)</p>
+<h2 id="迁移前操作"><a href="#迁移前操作" class="headerlink" title="迁移前操作"></a>迁移前操作</h2><blockquote>
+<p>获取苹果转移标识符 transfer_sub <a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/sign_in_with_apple/transferring_your_apps_and_users_to_another_team">苹果官方文档</a></p>
+</blockquote>
+<h3 id="客户端提供参数："><a href="#客户端提供参数：" class="headerlink" title="客户端提供参数："></a>客户端提供参数：</h3><ol>
+<li>client_id</li>
+<li>team_id</li>
+<li>key_id</li>
+<li>苹果p8文件</li>
+<li>recipient_team_id</li>
+</ol>
+<h3 id="后端操作步骤"><a href="#后端操作步骤" class="headerlink" title="后端操作步骤"></a>后端操作步骤</h3><ol>
+<li>获取client_secret,有效期可配置</li>
+<li>获取accessToken,缓存一小时</li>
+<li>获取转移标识符transfer_sub,并入库</li>
+</ol>
+<span id="more"></span>
+<h3 id="获取client-secret"><a href="#获取client-secret" class="headerlink" title="获取client_secret"></a>获取client_secret</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用ruby fileName.rb执行以下代码，获取client_secret</span></span><br><span class="line"><span class="comment"># 需安装jwt</span></span><br><span class="line"><span class="comment"># gem install jwt -v 1.5.4</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">&quot;jwt&quot;</span></span><br><span class="line">key_file = <span class="string">&quot;AuthKey_xxxxx.p8&quot;</span> <span class="comment"># 客户端提供的p8文件路径</span></span><br><span class="line">team_id = <span class="string">&quot;team_id&quot;</span></span><br><span class="line">client_id = <span class="string">&quot;bundle_id&quot;</span></span><br><span class="line">key_id = <span class="string">&quot;key_id&quot;</span></span><br><span class="line">validity_period = <span class="number">180</span></span><br><span class="line">private_key = <span class="title class_">OpenSSL::PKey::EC</span>.new <span class="variable constant_">IO</span>.read key_file</span><br><span class="line">token = <span class="variable constant_">JWT</span>.encode(</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="symbol">iss:</span> team_id,</span><br><span class="line">    <span class="symbol">iat:</span> Time.now.to_i,</span><br><span class="line">    <span class="symbol">exp:</span> Time.now.to_i + <span class="number">86400</span> * validity_period,</span><br><span class="line">    <span class="symbol">aud:</span> <span class="string">&quot;https://appleid.apple.com&quot;</span>,</span><br><span class="line">    <span class="symbol">sub:</span> client_id</span><br><span class="line">  &#125;,</span><br><span class="line">  private_key,</span><br><span class="line">  <span class="string">&quot;ES256&quot;</span>,</span><br><span class="line">  header_fields=</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="symbol">kid:</span> key_id </span><br><span class="line">  &#125;</span><br><span class="line">)</span><br><span class="line">puts token</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取AccessToken"><a href="#获取AccessToken" class="headerlink" title="获取AccessToken"></a>获取AccessToken</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl --location --request POST &#x27;http://appleid.apple.com/auth/token?grant_type=client_credentials&amp;scope=user.migration&amp;client_id=&#123;bundleId&#125;&amp;client_secret=&#123;刚刚上面生成的client_secret&#125;&#x27; \</span><br><span class="line">--header &#x27;Content-Type: application/x-www-form-urlencoded&#x27; \</span><br><span class="line">--data-raw &#x27;&#x27;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 新加坡请求苹果服务器耗时大概是1000ms</span></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">getAppleAccessToken</span> = <span class="keyword">async</span> (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> key = redisKey.<span class="property">string</span>.<span class="property">appleAccessToken</span>;</span><br><span class="line">    <span class="keyword">let</span> accessToken = <span class="keyword">await</span> redis.<span class="title function_">get</span>(key);</span><br><span class="line">    <span class="keyword">if</span> (!accessToken) &#123;</span><br><span class="line">        <span class="keyword">const</span> startTime = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>();</span><br><span class="line">        <span class="keyword">const</span> bundleId = <span class="string">&#x27;bundle_id&#x27;</span>;</span><br><span class="line">        <span class="keyword">const</span> clientSecret = <span class="string">&#x27;clientSecret&#x27;</span>;</span><br><span class="line">        <span class="keyword">const</span> url = <span class="string">`http://appleid.apple.com/auth/token?grant_type=client_credentials&amp;scope=user.migration&amp;client_id=<span class="subst">$&#123;bundleId&#125;</span>&amp;client_secret=<span class="subst">$&#123;clientSecret&#125;</span>`</span>;</span><br><span class="line">        <span class="keyword">const</span> options = &#123;</span><br><span class="line">            <span class="attr">method</span>: <span class="string">&#x27;POST&#x27;</span>,</span><br><span class="line">            <span class="attr">uri</span>: url,</span><br><span class="line">            <span class="attr">followAllRedirects</span>: <span class="literal">true</span>,</span><br><span class="line">            <span class="attr">followOriginalHttpMethod</span>: <span class="literal">true</span>,</span><br><span class="line">            <span class="attr">headers</span>: &#123;</span><br><span class="line">                <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;application/x-www-form-urlencoded&#x27;</span>,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="keyword">const</span> data = <span class="keyword">await</span> <span class="title function_">request</span>(options).<span class="title function_">catch</span>(<span class="function">(<span class="params">err</span>) =&gt;</span> &#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(err);</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">const</span> endTime = <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>();</span><br><span class="line">        <span class="keyword">const</span> result = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(data);</span><br><span class="line">        <span class="keyword">if</span> (result.<span class="property">access_token</span>) &#123;</span><br><span class="line">            <span class="comment">// 苹果accessToken有效期1小时,不会覆盖,不会因为生成新的,导致旧的token失效</span></span><br><span class="line">            accessToken = result.<span class="property">access_token</span>;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`新生成accessToken <span class="subst">$&#123;<span class="built_in">JSON</span>.stringify(result)&#125;</span>`</span>, <span class="string">&#x27;耗时&#x27;</span>, endTime - startTime);</span><br><span class="line">            <span class="keyword">await</span> redis.<span class="title function_">set</span>(key, accessToken, <span class="string">&#x27;EX&#x27;</span>, <span class="number">3600</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> accessToken;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取转移标识符transfer-sub"><a href="#获取转移标识符transfer-sub" class="headerlink" title="获取转移标识符transfer_sub"></a>获取转移标识符transfer_sub</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl --location --request POST &#x27;http://appleid.apple.com/auth/usermigrationinfo?sub=&#123;用户苹果登录时传的appleUserId&#125;&amp;target=&#123;target_id&#125;&amp;client_id=&#123;bundleId&#125;&amp;client_secret=&#123;&#123;刚刚上面的上面生成的client_secret&#125;&#125;&#x27; \</span><br><span class="line">--header &#x27;Content-Type: application/x-www-form-urlencoded&#x27; \</span><br><span class="line">--header &#x27;Authorization: Bearer &#123;刚刚上面获取的accesstoken&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">// 新加坡请求苹果服务器耗时大概是1000ms</span><br><span class="line">const getTransferSub = async (appleUserId, token) =&gt; &#123;</span><br><span class="line">    const startTime = new Date().getTime();</span><br><span class="line">    const bundleId = &#x27;bundle_id&#x27;; // App的bundle_id</span><br><span class="line">    const targetId = &#x27;targetId&#x27;; // 接收App的团队id,recipient_team_id</span><br><span class="line">    const clientSecret = &#x27;clientSecret&#x27;;</span><br><span class="line">    const url = `http://appleid.apple.com/auth/usermigrationinfo?sub=$&#123;appleUserId&#125;&amp;target=$&#123;targetId&#125;&amp;client_id=$&#123;bundleId&#125;&amp;client_secret=$&#123;clientSecret&#125;`;</span><br><span class="line">    const options = &#123;</span><br><span class="line">        method: &#x27;POST&#x27;,</span><br><span class="line">        uri: url,</span><br><span class="line">        followAllRedirects: true,</span><br><span class="line">        followOriginalHttpMethod: true,</span><br><span class="line">        headers: &#123;</span><br><span class="line">            &#x27;Content-Type&#x27;: &#x27;application/x-www-form-urlencoded&#x27;,</span><br><span class="line">            &#x27;Authorization&#x27;: `Bearer $&#123;token&#125;`</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    const data = await request(options).catch((err) =&gt; &#123;</span><br><span class="line">        console.log(&#x27;获取TransferSub失败&#x27;, JSON.stringify(err), err.message, redisKey.string.appleAccessToken); // 有部分用户可能取消了苹果登录的授权,所以会失败</span><br><span class="line">        throw new Error(&#x27;getTransferSubError&#x27;);</span><br><span class="line">    &#125;);</span><br><span class="line">    const endTime = new Date().getTime();</span><br><span class="line">    console.log(`获取TransferSub $&#123;data&#125;`, &#x27;耗时&#x27;, endTime - startTime);</span><br><span class="line">    const result = JSON.parse(data);</span><br><span class="line">    if (result.error) &#123;</span><br><span class="line">        console.log(&#x27;token过期&#x27;, result.error, redisKey.string.appleAccessToken);</span><br><span class="line">        // token过期,删除原来的缓存</span><br><span class="line">        await redis.del(redisKey.string.appleAccessToken);</span><br><span class="line">        throw new Error(&#x27;token_expires&#x27;);</span><br><span class="line">    &#125;</span><br><span class="line">    return result.transfer_sub;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="通过队列消费任务"><a href="#通过队列消费任务" class="headerlink" title="通过队列消费任务"></a>通过队列消费任务</h3><blockquote>
+<p>我这边最多使用了30个容器同时消费,并没有被苹果因为QPS的原因拒绝</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">channel.addSetup(async function(channel) &#123;</span><br><span class="line">    const prefetch = parseInt(process.env.prefetch) || 1;</span><br><span class="line">    await channel.assertQueue(&#x27;apple.login.userId.record&#x27;, &#123; durable: true &#125;);</span><br><span class="line">    await channel.prefetch(prefetch);</span><br><span class="line">    channel.setConfig(&#123;</span><br><span class="line">        DEAD_LETTER_TTLs: [5, 10, 30], // 重试配置</span><br><span class="line">    &#125;);</span><br><span class="line">    await channel.consumerQueue(&#x27;apple.login.userId.record&#x27;, async function(data) &#123;</span><br><span class="line">        console.log(&#x27;苹果登录用户转移标识符记录:&#x27;, JSON.stringify(data.username));</span><br><span class="line">        await recordUserAppleTransferSub(data);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line">const recordUserAppleTransferSub = async (data) =&gt; &#123;</span><br><span class="line">    const appleUserId = data.username;</span><br><span class="line">    if (appleUserId) &#123;</span><br><span class="line">        const accessToken = await getAppleAccessToken();</span><br><span class="line">        if (accessToken) &#123;</span><br><span class="line">            let transferSub = await getTransferSubByAppleUserId(appleUserId);</span><br><span class="line">            if (!transferSub) &#123;</span><br><span class="line">                transferSub = await getTransferSub(appleUserId, accessToken);</span><br><span class="line">                await updateTransferSubUserData(appleUserId, transferSub);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                console.log(&#x27;该用户已经获取了transferSub&#x27;, JSON.stringify(transferSub), appleUserId);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="迁移后"><a href="#迁移后" class="headerlink" title="迁移后"></a>迁移后</h2><blockquote>
+<p>获取新的appleUserId <a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/sign_in_with_apple/bringing_new_apps_and_users_into_your_team">苹果官方文档</a></p>
+</blockquote>
+<h3 id="客户端提供参数：-1"><a href="#客户端提供参数：-1" class="headerlink" title="客户端提供参数："></a>客户端提供参数：</h3><ol>
+<li>client_id</li>
+<li>team_id</li>
+<li>key_id</li>
+<li>苹果p8文件</li>
+</ol>
+<h3 id="后端操作步骤-1"><a href="#后端操作步骤-1" class="headerlink" title="后端操作步骤"></a>后端操作步骤</h3><ol>
+<li>获取client_secret,有效期可配置</li>
+<li>获取accessToken,缓存一小时</li>
+<li>通过transfer_sub和token,获取新的AppleUserId,并入库</li>
+</ol>
+<h3 id="获取新的client-secret"><a href="#获取新的client-secret" class="headerlink" title="获取新的client_secret"></a>获取新的client_secret</h3><p>客户端提供新的参数,使用之前的脚本获取client_secret</p>
+<h3 id="获取AccessToken-1"><a href="#获取AccessToken-1" class="headerlink" title="获取AccessToken"></a>获取AccessToken</h3><p>使用新的client_secret获取AccessToken</p>
+<h3 id="获取新的AppleUserId-遍历之前的苹果登录转移标识符表"><a href="#获取新的AppleUserId-遍历之前的苹果登录转移标识符表" class="headerlink" title="获取新的AppleUserId(遍历之前的苹果登录转移标识符表)"></a>获取新的AppleUserId(遍历之前的苹果登录转移标识符表)</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl --location --request POST &#x27;http://appleid.apple.com/auth/usermigrationinfo?transfer_sub=&#123;transfer_sub&#125;&amp;client_id=&#123;bundleId&#125;&amp;client_secret=&#123;&#123;刚刚上面的上面生成的client_secret&#125;&#125;&#x27; \</span><br><span class="line">--header &#x27;Content-Type: application/x-www-form-urlencoded&#x27; \</span><br><span class="line">--header &#x27;Authorization: Bearer &#123;刚刚上面获取的accesstoken&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">const getNewAppleUserId = async (transferSub, token) =&gt; &#123;</span><br><span class="line">    const startTime = new Date().getTime();</span><br><span class="line">    const bundleId = &#x27;bundle_id&#x27;;</span><br><span class="line">    const url = `http://appleid.apple.com/auth/usermigrationinfo?transfer_sub=$&#123;transferSub&#125;&amp;client_id=$&#123;bundleId&#125;&amp;client_secret=$&#123;clientSecret&#125;`;</span><br><span class="line">    const options = &#123;</span><br><span class="line">        method: &#x27;POST&#x27;,</span><br><span class="line">        uri: url,</span><br><span class="line">        followAllRedirects: true,</span><br><span class="line">        followOriginalHttpMethod: true,</span><br><span class="line">        headers: &#123;</span><br><span class="line">            &#x27;Content-Type&#x27;: &#x27;application/x-www-form-urlencoded&#x27;,</span><br><span class="line">            &#x27;Authorization&#x27;: `Bearer $&#123;token&#125;`</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    const data = await request(options).catch((err) =&gt; &#123;</span><br><span class="line">        console.log(&#x27;获取NewAppleUserId失败&#x27;, JSON.stringify(err), err.message, redisKey.string.appleAccessToken);</span><br><span class="line">        throw new Error(&#x27;getNewAppleUserId&#x27;);</span><br><span class="line">    &#125;);</span><br><span class="line">    const endTime = new Date().getTime();</span><br><span class="line">    console.log(`获取NewAppleUserId $&#123;data&#125;`, &#x27;耗时&#x27;, `$&#123;endTime - startTime&#125;ms`);</span><br><span class="line">    const result = JSON.parse(data);</span><br><span class="line">    if (result.error) &#123;</span><br><span class="line">        console.log(&#x27;token过期&#x27;, result.error, redisKey.string.appleAccessToken);</span><br><span class="line">        await redis.del(redisKey.string.appleAccessToken);</span><br><span class="line">        throw new Error(&#x27;token_expires&#x27;);</span><br><span class="line">    &#125;</span><br><span class="line">    return result.sub;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="将新AppleUserId入库-建立新旧AppleUserId的映射关系"><a href="#将新AppleUserId入库-建立新旧AppleUserId的映射关系" class="headerlink" title="将新AppleUserId入库,建立新旧AppleUserId的映射关系"></a>将新AppleUserId入库,建立新旧AppleUserId的映射关系</h3><p>在用户表中新增newAppleUserId字段,建立<strong>部分索引</strong><br>当用户调用苹果登录时,先判断用户客户端是否为新版客户端,如果是则查询</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctx.model.User.findOne(&#123; $or: [&#123; username: appleUserId &#125;, &#123; newAppleUserId: appleUserId &#125;] &#125;)</span><br></pre></td></tr></table></figure>
+
+<h1 id="苹果App主题迁移-游客登录"><a href="#苹果App主题迁移-游客登录" class="headerlink" title="苹果App主题迁移-游客登录"></a>苹果App主题迁移-游客登录</h1><h2 id="客户端上报deviceId和openId"><a href="#客户端上报deviceId和openId" class="headerlink" title="客户端上报deviceId和openId"></a>客户端上报deviceId和openId</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app.router.post(&#x27;/apple_device_guest&#x27;, app.controller.device.openIdAndDeviceId); // 苹果主体迁移临时记录</span><br></pre></td></tr></table></figure>
+
+<h2 id="客户端通过deviceId获取openId"><a href="#客户端通过deviceId获取openId" class="headerlink" title="客户端通过deviceId获取openId"></a>客户端通过deviceId获取openId</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app.router.get(&#x27;/apple_device_guest&#x27;, app.controller.device.getOpenIdByDeviceId); // 获取openId</span><br></pre></td></tr></table></figure>
+
+<p>##新版游客登录</p>
+<ol>
+<li>判断客户端版本是否是在迁移后的新版</li>
+<li>是的话先通过IDFA(deviceId)获取openId</li>
+<li>通过openId找到原来的账号进行登录</li>
+<li>如果没有IDFA则注册新账号进行登录</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/18/brew%E6%9B%B4%E6%8D%A2%E6%BA%90/" rel="prev" title="brew更换镜像源">
+      <i class="fa fa-chevron-left"></i> brew更换镜像源
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/08/mongoDB%20$or%E6%93%8D%E4%BD%9C%E7%B4%A2%E5%BC%95/" rel="next" title="MongoDB $or操作索引优化">
+      MongoDB $or操作索引优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%8B%B9%E6%9E%9CApp%E4%B8%BB%E4%BD%93%E8%BF%81%E7%A7%BB"><span class="nav-number">1.</span> <span class="nav-text">苹果App主体迁移</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8B%B9%E6%9E%9CApp%E4%B8%BB%E4%BD%93%E8%BF%81%E7%A7%BB-%E8%8B%B9%E6%9E%9C%E7%99%BB%E5%BD%95"><span class="nav-number">1.1.</span> <span class="nav-text">苹果App主体迁移-苹果登录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-number">1.2.</span> <span class="nav-text">迁移流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E5%89%8D%E6%93%8D%E4%BD%9C"><span class="nav-number">1.3.</span> <span class="nav-text">迁移前操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8F%90%E4%BE%9B%E5%8F%82%E6%95%B0%EF%BC%9A"><span class="nav-number">1.3.1.</span> <span class="nav-text">客户端提供参数：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8E%E7%AB%AF%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.2.</span> <span class="nav-text">后端操作步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96client-secret"><span class="nav-number">1.3.3.</span> <span class="nav-text">获取client_secret</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96AccessToken"><span class="nav-number">1.3.4.</span> <span class="nav-text">获取AccessToken</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E8%BD%AC%E7%A7%BB%E6%A0%87%E8%AF%86%E7%AC%A6transfer-sub"><span class="nav-number">1.3.5.</span> <span class="nav-text">获取转移标识符transfer_sub</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E9%98%9F%E5%88%97%E6%B6%88%E8%B4%B9%E4%BB%BB%E5%8A%A1"><span class="nav-number">1.3.6.</span> <span class="nav-text">通过队列消费任务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E5%90%8E"><span class="nav-number">1.4.</span> <span class="nav-text">迁移后</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8F%90%E4%BE%9B%E5%8F%82%E6%95%B0%EF%BC%9A-1"><span class="nav-number">1.4.1.</span> <span class="nav-text">客户端提供参数：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8E%E7%AB%AF%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4-1"><span class="nav-number">1.4.2.</span> <span class="nav-text">后端操作步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%96%B0%E7%9A%84client-secret"><span class="nav-number">1.4.3.</span> <span class="nav-text">获取新的client_secret</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96AccessToken-1"><span class="nav-number">1.4.4.</span> <span class="nav-text">获取AccessToken</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%96%B0%E7%9A%84AppleUserId-%E9%81%8D%E5%8E%86%E4%B9%8B%E5%89%8D%E7%9A%84%E8%8B%B9%E6%9E%9C%E7%99%BB%E5%BD%95%E8%BD%AC%E7%A7%BB%E6%A0%87%E8%AF%86%E7%AC%A6%E8%A1%A8"><span class="nav-number">1.4.5.</span> <span class="nav-text">获取新的AppleUserId(遍历之前的苹果登录转移标识符表)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86%E6%96%B0AppleUserId%E5%85%A5%E5%BA%93-%E5%BB%BA%E7%AB%8B%E6%96%B0%E6%97%A7AppleUserId%E7%9A%84%E6%98%A0%E5%B0%84%E5%85%B3%E7%B3%BB"><span class="nav-number">1.4.6.</span> <span class="nav-text">将新AppleUserId入库,建立新旧AppleUserId的映射关系</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%8B%B9%E6%9E%9CApp%E4%B8%BB%E9%A2%98%E8%BF%81%E7%A7%BB-%E6%B8%B8%E5%AE%A2%E7%99%BB%E5%BD%95"><span class="nav-number">2.</span> <span class="nav-text">苹果App主题迁移-游客登录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8A%E6%8A%A5deviceId%E5%92%8CopenId"><span class="nav-number">2.1.</span> <span class="nav-text">客户端上报deviceId和openId</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%80%9A%E8%BF%87deviceId%E8%8E%B7%E5%8F%96openId"><span class="nav-number">2.2.</span> <span class="nav-text">客户端通过deviceId获取openId</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta property="og:type" content="website">
+<meta property="og:title" content="黄威龙的笔记">
+<meta property="og:url" content="http://hwl.me/page/4/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hwl.me/page/4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/09/11/Docker%E5%92%8C%20K8S/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/09/11/Docker%E5%92%8C%20K8S/" class="post-title-link" itemprop="url">Docker和 K8S</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-09-11 10:48:22 / 修改时间：11:16:11" itemprop="dateCreated datePublished" datetime="2019-09-11T10:48:22+08:00">2019-09-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/09/11/Docker%E5%92%8C%20K8S/" class="post-meta-item leancloud_visitors" data-flag-title="Docker和 K8S" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/09/11/Docker%E5%92%8C%20K8S/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/09/11/Docker%E5%92%8C%20K8S/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h1><blockquote>
+<p>在了解 Docker 之前先了解虚拟机,虚拟机就是在你的操作系统里面，装一个软件，然后通过这个软件，再模拟一台甚至多台“子电脑”出来。而Docker这样的容器技术，也是虚拟化技术，属于轻量级的虚拟化</p>
+</blockquote>
+<p>虚拟机虽然可以隔离出很多“子电脑”，但占用空间更大，启动更慢，虚拟机软件可能还要花钱（例如VMWare）。<br>而容器技术恰好没有这些缺点。它不需要虚拟出整个操作系统，只需要虚拟一个小规模的环境（类似“沙箱”）。它启动时间很快，几秒钟就能完成。而且，它对资源的利用率很高（一台主机可以同时运行几千个Docker容器）。此外，它占的空间很小，虚拟机一般要几GB到几十GB的空间，而容器只需要MB级甚至KB级。</p>
+<p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190911105521.jpg"></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/09/11/Docker%E5%92%8C%20K8S/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/09/04/js%E9%A1%B5%E9%9D%A2%E5%86%85%E8%B7%B3%E8%BD%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/09/04/js%E9%A1%B5%E9%9D%A2%E5%86%85%E8%B7%B3%E8%BD%AC/" class="post-title-link" itemprop="url">scrollIntoView事件</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-09-04 17:13:35 / 修改时间：17:55:08" itemprop="dateCreated datePublished" datetime="2019-09-04T17:13:35+08:00">2019-09-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">前端学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/09/04/js%E9%A1%B5%E9%9D%A2%E5%86%85%E8%B7%B3%E8%BD%AC/" class="post-meta-item leancloud_visitors" data-flag-title="scrollIntoView事件" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/09/04/js%E9%A1%B5%E9%9D%A2%E5%86%85%E8%B7%B3%E8%BD%AC/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/09/04/js%E9%A1%B5%E9%9D%A2%E5%86%85%E8%B7%B3%E8%BD%AC/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>经常在用的一个配置管理页面在产品迭代了几个版本以后发现配置页越来越长,但是又不想做成两列(觉得丑),所以就自己写了一个目录,点击以后页面会滑动到对应的配置项.<br>一开始是打算用 a 标签的 href 来做,但是发现这个方式点击以后会改变 URL,而且是直接跳到指定的标签,用户体验不是很好,就改用scrollIntoView</p>
+<h1 id="scrollIntoView事件"><a href="#scrollIntoView事件" class="headerlink" title="scrollIntoView事件"></a>scrollIntoView事件</h1><p>Element.scrollIntoView() 方法让当前的元素滚动到浏览器窗口的可视区域内<br>只要用<code>document.getElementById()</code>方法找到要跳转的 element,然后就可以用scrollIntoView方法实现跳转,代码如下:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(target).<span class="title function_">scrollIntoView</span>(&#123;</span><br><span class="line">    <span class="attr">behavior</span>: <span class="string">&#x27;smooth&#x27;</span>,</span><br><span class="line">    <span class="attr">block</span>: <span class="string">&#x27;start&#x27;</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>scrollIntoView方法有 3 个多态,分别是不传参数,传 Boolean型的参数,传 Object 型的参数.</p>
+<blockquote>
+<p>element.scrollIntoView(); &#x2F;&#x2F; 等同于element.scrollIntoView(true)<br>element.scrollIntoView(alignToTop); &#x2F;&#x2F; Boolean型参数<br>element.scrollIntoView(scrollIntoViewOptions); &#x2F;&#x2F; Object型参数</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/09/04/js%E9%A1%B5%E9%9D%A2%E5%86%85%E8%B7%B3%E8%BD%AC/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/07/26/node.js%E7%BD%91%E7%BB%9C%E9%94%99%E8%AF%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/07/26/node.js%E7%BD%91%E7%BB%9C%E9%94%99%E8%AF%AF/" class="post-title-link" itemprop="url">nodejs 网络错误信息</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-07-26 09:15:11 / 修改时间：09:30:03" itemprop="dateCreated datePublished" datetime="2019-07-26T09:15:11+08:00">2019-07-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/07/26/node.js%E7%BD%91%E7%BB%9C%E9%94%99%E8%AF%AF/" class="post-meta-item leancloud_visitors" data-flag-title="nodejs 网络错误信息" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/07/26/node.js%E7%BD%91%E7%BB%9C%E9%94%99%E8%AF%AF/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/07/26/node.js%E7%BD%91%E7%BB%9C%E9%94%99%E8%AF%AF/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1.介绍"></a>1.介绍</h1><p>Node.js 底层使用的是 glibc 库，这些错误信息都是 glibc 库在 socket 连接时使用的 connect 函数中定义的错误类型，当然，v8在使用glibc库时也会加入一些自定义的错误类型，但许多错误情况还是和glibc中的定义一致的。</p>
+<p>connect 函数的定义为：int connect (int socket, struct sockaddr addr, socklen_t length)</p>
+<p>connect 函数会使用文件描述符（file descriptor）socket表示的 socket 发起连接，socket 地址通过 addr 和 length 这两个参数来指定。（这个 socket 一般是其他机器的 socket，而且必须已经配置成了服务器）。</p>
+<p>一般情况下，connect 函数会等待服务器响应请求才返回。当然也可以将 socket 设置为非阻塞模式来不等待响应就快速返回（可以参考下 nginx 是怎么使用 socket 的）。</p>
+<h1 id="2-错误类型"><a href="#2-错误类型" class="headerlink" title="2.错误类型"></a>2.错误类型</h1><blockquote>
+<p>connect 函数正常的返回值为 0，在有错误时会返回 -1。函数中定义了如下错误条件：</p>
+</blockquote>
+<ul>
+<li>EBADF：socket 不是有效的文件描述符（file descriptor）。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/07/26/node.js%E7%BD%91%E7%BB%9C%E9%94%99%E8%AF%AF/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">短链接算法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-07-04 11:26:14" itemprop="dateCreated datePublished" datetime="2019-07-04T11:26:14+08:00">2019-07-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-07-09 14:04:16" itemprop="dateModified" datetime="2019-07-09T14:04:16+08:00">2019-07-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/" class="post-meta-item leancloud_visitors" data-flag-title="短链接算法" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>分享到微博或者推特都有 140 字的限制,所以最近产品提出一个分享 URL 要做成短链接的需求,便在网上查询了一下资料,综合下来,总结了几种算法.</p>
+<h1 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h1><p>总的来说就是把长的 URL 通过一个算法得出一个 6 位左右的短链,再把这个映射关系保存起来,下次有用户访问短链的时候我们能找到他对应的长链.并通过301 或者 302 重定向到原来的 URL 上.</p>
+<h2 id="1-自增-id-转-62-进制"><a href="#1-自增-id-转-62-进制" class="headerlink" title="1. 自增 id 转 62 进制"></a>1. 自增 id 转 62 进制</h2><p>从数据库或者 redis 里取一个自增数据,然后十进制转化成 62 进制,这样短链就永远不会重复,适合于原始 URL 1 对多的情况,也就是一个长链接每次分享都生成不一样的短链接.<br><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190704142037.png"><br>就算是一亿对应的 62 进制数也就是 6LAze,短短的 5 位.<br><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190709114800.jpg"></p>
+<p>最小的 7 位 62 进制数对应的十进制数是 56800235584,五百六十八亿多,远超当前的所有URL 总和.所以 6 位数的 62 进制是肯定够用的.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/06/27/%E7%A5%9E%E5%A5%87%E7%9A%84%20null%20%3E=%200/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/06/27/%E7%A5%9E%E5%A5%87%E7%9A%84%20null%20%3E=%200/" class="post-title-link" itemprop="url">神奇的 null >= 0</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-06-27 15:10:06 / 修改时间：15:21:31" itemprop="dateCreated datePublished" datetime="2019-06-27T15:10:06+08:00">2019-06-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/06/27/%E7%A5%9E%E5%A5%87%E7%9A%84%20null%20%3E=%200/" class="post-meta-item leancloud_visitors" data-flag-title="神奇的 null >= 0" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/06/27/%E7%A5%9E%E5%A5%87%E7%9A%84%20null%20%3E=%200/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/06/27/%E7%A5%9E%E5%A5%87%E7%9A%84%20null%20%3E=%200/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>今天在写代码的时候遇到一个 bug,价格竟然显示了 null.非常莫名其妙,我明明做了错误处理,打断点之后发现问题</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (item.<span class="property">customPrice</span> &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    item.<span class="property">price</span> = item.<span class="property">customPrice</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    item.<span class="property">price</span> = <span class="number">10</span>;</span><br><span class="line">&#125;   </span><br></pre></td></tr></table></figure>
+<p>也就是说 item.customPrice 需要是数字且大于等于0,才会赋值给price,否则会调用默认值.<br>但是我发现当 customPrice &#x3D; null 时这个判断也会为真值,此时 item.price &#x3D; null;</p>
+<h2 id="null-gt-x3D-0-那-null-x3D-x3D-0"><a href="#null-gt-x3D-0-那-null-x3D-x3D-0" class="headerlink" title="null &gt;&#x3D; 0?那 null &#x3D;&#x3D; 0?"></a>null &gt;&#x3D; 0?那 null &#x3D;&#x3D; 0?</h2><p>我用 Chrome 的 console 写了几个判断</p>
+<p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190627150832.png"><br>发现只有 <code>null &gt;= 0</code> 和 <code>null &lt;= 0</code>的判断为真值,其他都是 false</p>
+<h2 id="查资料"><a href="#查资料" class="headerlink" title="查资料"></a>查资料</h2><p>如果想明确，这个问题具体是怎么回事，那么我们需要重新来回顾一下我们的 ECMAScript Language Specification (HTML version)，翻译过来就是ECMAScript语言规范(HTML版本)。</p>
+<h3 id="内部相等性运算算法"><a href="#内部相等性运算算法" class="headerlink" title="内部相等性运算算法"></a>内部相等性运算算法</h3><p>首先我们来看一下 ES3 关于 内部相等性运算的算法实现。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/06/27/%E7%A5%9E%E5%A5%87%E7%9A%84%20null%20%3E=%200/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/06/14/Vue-store%20%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/06/14/Vue-store%20%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Vue-store 笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-06-14 18:06:22 / 修改时间：18:42:12" itemprop="dateCreated datePublished" datetime="2019-06-14T18:06:22+08:00">2019-06-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">前端学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/06/14/Vue-store%20%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Vue-store 笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/06/14/Vue-store%20%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/06/14/Vue-store%20%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Vue-store"><a href="#Vue-store" class="headerlink" title="Vue-store"></a>Vue-store</h1><h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>有些时候需要在当前页面去修改其他页面的数据,如果使用 localStorage那需要页面重新加载,因为localStorage是数据不是在 Vue 项目本身的,而是存放在浏览器中的,这需要页面重新加载,样式才会重新加载数据并渲染.这在用户体验上是很不友好的事,这个时候就需要使用 store.</p>
+<h2 id="store"><a href="#store" class="headerlink" title="store"></a>store</h2><p>store 你可以理解为一个全局变量池,其中可以存放变量或者方法.<br>首先需要在 store里注册这个变量和改变它的方法</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// store.modules</span></span><br><span class="line"><span class="keyword">const</span> app = &#123;</span><br><span class="line">  <span class="attr">state</span>: &#123;</span><br><span class="line">    <span class="attr">isTopMenu</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">distributorNo</span>: <span class="number">0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">mutations</span>: &#123;</span><br><span class="line">    <span class="attr">SWITCH_MENU</span>: <span class="function">(<span class="params">state, isTopMenu</span>) =&gt;</span> &#123;</span><br><span class="line">      state.<span class="property">isTopMenu</span> = isTopMenu</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">CHANGE_DISTRIBUTORNO</span>: <span class="function">(<span class="params">state, distributorNo</span>) =&gt;</span> &#123;</span><br><span class="line">      state.<span class="property">distributorNo</span> = distributorNo</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">actions</span>: &#123;</span><br><span class="line">    <span class="title class_">SwitchMenu</span>(&#123; commit &#125;, isTopMenu) &#123;</span><br><span class="line">      <span class="title function_">commit</span>(<span class="string">&#x27;SWITCH_MENU&#x27;</span>, isTopMenu)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="title class_">ChangeDistributorNo</span>(&#123; commit &#125;, distributorNo) &#123;</span><br><span class="line">      <span class="title function_">commit</span>(<span class="string">&#x27;CHANGE_DISTRIBUTORNO&#x27;</span>, distributorNo)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> app</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在store-&gt;index.js 里初始化对象</span></span><br><span class="line"><span class="keyword">import</span> app <span class="keyword">from</span> <span class="string">&#x27;./modules/app&#x27;</span></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> <span class="title class_">Vuex</span>.<span class="title class_">Store</span>(&#123;</span><br><span class="line">  <span class="attr">modules</span>: &#123;</span><br><span class="line">    app</span><br><span class="line">  &#125;,</span><br><span class="line">  getters</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> store</span><br></pre></td></tr></table></figure>
+
+<p>这样我们就有了 state.distributorNo, ChangeDistributorNo(), CHANGE_DISTRIBUTORNO</p>
+<h2 id="store-dispatch-调用"><a href="#store-dispatch-调用" class="headerlink" title="store.dispatch 调用"></a>store.dispatch 调用</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/06/14/Vue-store%20%E7%AC%94%E8%AE%B0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/" class="post-title-link" itemprop="url">JavaScript 的原型链</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-06-05 15:51:54" itemprop="dateCreated datePublished" datetime="2019-06-05T15:51:54+08:00">2019-06-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-12-19 14:43:07" itemprop="dateModified" datetime="2019-12-19T14:43:07+08:00">2019-12-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/" class="post-meta-item leancloud_visitors" data-flag-title="JavaScript 的原型链" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="JavaScript-的原型链"><a href="#JavaScript-的原型链" class="headerlink" title="JavaScript 的原型链"></a>JavaScript 的原型链</h1><p>JavaScript 的原型链关系到js 的对象,方法实例化的原理,弄懂原型链就可以明白 js 封装继承的原理.对理解js 的面向对象有很大的帮助.在 ES6 中引入了 class 关键字，但那只是语法糖，JavaScript 仍然是基于原型链的.<br>原型链主要是由 2 个对象实现的: <code>__proto__</code> 和 <code>prototype</code></p>
+<h2 id="proto-和-prototype"><a href="#proto-和-prototype" class="headerlink" title="__proto__和 prototype"></a>__proto__和 prototype</h2><p>JavaScript 的所有对象都有<code>__proto__</code>这个属性,其实<code>__proto__</code>就是一个指针, 他指向实例化他这个对象的原始对象的 prototype 对象.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Book</span> &#123;&#125; <span class="comment">// function Book() &#123;&#125;</span></span><br><span class="line"><span class="keyword">const</span> mathBook = <span class="keyword">new</span> <span class="title class_">Book</span>();</span><br><span class="line"><span class="comment">// 这里mathBook.__proto__ === Book.prototype</span></span><br><span class="line"><span class="comment">// 这就是__proto__指向实例化他的原始对象的 prototype.</span></span><br></pre></td></tr></table></figure>
+<p>prototype 是所有的<strong>函数对象</strong>都有的属性,当一个<strong>函数对象</strong>被 new 实例化时,他的 prototype 里的属性和方法都会被复制一份,放到实例化的对象里,并且 prototype 这个对象也有<code>__proto__</code>对象,实例化的时候还会把<code>__proto__</code>指向的对象的 prototype 里的属性和方法也复制一份.也就实现了继承.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Book</span> &#123;&#125;</span><br><span class="line"><span class="keyword">const</span> mathBook = <span class="keyword">new</span> <span class="title class_">Book</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Book</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">__proto__</span> === <span class="title class_">Object</span>.<span class="property"><span class="keyword">prototype</span></span>) <span class="comment">// true</span></span><br><span class="line"><span class="comment">// 但是 mathBook 是没有 prototype 属性的,因为他是一个实例化对象,而不是一个函数,js 中的类是用函数模拟出来的,全依赖这个 prototype</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="JavaScript-的基本数据类型"><a href="#JavaScript-的基本数据类型" class="headerlink" title="JavaScript 的基本数据类型"></a>JavaScript 的基本数据类型</h2><p>JavaScript 的基本数据类型也是通过这种方法实现的.</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/05/31/firebase%20%E6%8E%A8%E9%80%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/05/31/firebase%20%E6%8E%A8%E9%80%81/" class="post-title-link" itemprop="url">firebase 消息推送</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-05-31 16:43:01" itemprop="dateCreated datePublished" datetime="2019-05-31T16:43:01+08:00">2019-05-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-06-10 11:47:10" itemprop="dateModified" datetime="2019-06-10T11:47:10+08:00">2019-06-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/05/31/firebase%20%E6%8E%A8%E9%80%81/" class="post-meta-item leancloud_visitors" data-flag-title="firebase 消息推送" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/05/31/firebase%20%E6%8E%A8%E9%80%81/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/05/31/firebase%20%E6%8E%A8%E9%80%81/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="配置-firebase"><a href="#配置-firebase" class="headerlink" title="配置 firebase"></a>配置 firebase</h1><p>在创建了 firebase 项目以后,首先要将 Firebase Admin SDK 添加到服务器,然后生成配置 json 文件</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://firebase.google.com/docs/admin/setup?hl=zh-cn">firebase添加到服务器</a></p>
+</blockquote>
+<p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190610114538.jpg"></p>
+<p><strong>点击生成 JSON 文件以后,需备份保存,以免丢失</strong></p>
+<h1 id="初始化-firebase-SDK"><a href="#初始化-firebase-SDK" class="headerlink" title="初始化 firebase SDK"></a>初始化 firebase SDK</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/05/31/firebase%20%E6%8E%A8%E9%80%81/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" class="post-title-link" itemprop="url">JavaScript 的错误处理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-05-31 10:51:34 / 修改时间：15:58:09" itemprop="dateCreated datePublished" datetime="2019-05-31T10:51:34+08:00">2019-05-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" class="post-meta-item leancloud_visitors" data-flag-title="JavaScript 的错误处理" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在使用异步的终极解决方案-ES7的async&#x2F;await同时，如何优雅的处理错误提高代码的兼容性让作为码农的我很头疼。在项目实战中合理的使用try…catch…让代码的兼容和稳定性大大增强。</p>
+<h1 id="本文将对-try…catch…-分成三个方面来叙述。"><a href="#本文将对-try…catch…-分成三个方面来叙述。" class="headerlink" title="本文将对 try…catch… 分成三个方面来叙述。"></a>本文将对 try…catch… 分成三个方面来叙述。</h1><ul>
+<li>为什么要用</li>
+<li>如何使用</li>
+<li>实战</li>
+</ul>
+<h2 id="1、为什么要用-try…catch…"><a href="#1、为什么要用-try…catch…" class="headerlink" title="1、为什么要用 try…catch…"></a>1、为什么要用 try…catch…</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">funcAsync</span>(<span class="params"></span>)&#123;</span><br><span class="line">   <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;\n---begin---\n&#x27;</span>);</span><br><span class="line">   <span class="keyword">await</span> <span class="title function_">ih_func</span>();</span><br><span class="line">   <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;------end-----&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">ih_func</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="keyword">function</span> (<span class="params">resolve, reject</span>) &#123;</span><br><span class="line">    <span class="comment">//这里相当于throw一个异常了</span></span><br><span class="line">    <span class="title function_">reject</span>(<span class="string">&#x27;error&#x27;</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">funcAsync</span>();</span><br></pre></td></tr></table></figure>
+
+<p>运行结果</p>
+<p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190531110432.png"></p>
+<p>你一定会好奇为什么只打印了begin而没有打印end，这是因为reject(‘error’); 相当于throw一个异常了，所以程序就不会继续往下执行了，想要程序继续执行下去就需要处理throw出来的异常。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/" class="post-title-link" itemprop="url">google服务</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-25 16:58:00" itemprop="dateCreated datePublished" datetime="2019-04-25T16:58:00+08:00">2019-04-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-08 16:23:30" itemprop="dateModified" datetime="2020-12-08T16:23:30+08:00">2020-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/" class="post-meta-item leancloud_visitors" data-flag-title="google服务" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="google服务"><a href="#google服务" class="headerlink" title="google服务"></a>google服务</h1><h2 id="谷歌登录"><a href="#谷歌登录" class="headerlink" title="谷歌登录"></a>谷歌登录</h2><p>谷歌登录只需要 clientId.客户端会获取到 idToken,发送给后端以后,后端拿 idToken请求谷歌,谷歌会解析出这个 Google 账号的信息,其中azp参数就是 clientId,与本地的 clientId 对比,校验这个账号是不是本应用登录的.是的话就创建账号或登录,返回账号信息给客户端.</p>
+<h2 id="谷歌支付"><a href="#谷歌支付" class="headerlink" title="谷歌支付"></a>谷歌支付</h2><p>谷歌支付需要的参数:</p>
+<ul>
+<li>clientId</li>
+<li>clientSecret</li>
+<li>googlePublicKey</li>
+<li>最麻烦的refreshToken</li>
+</ul>
+<p>其中 clientId 和 clientSecret还有googlePublicKey在谷歌开发者后台可以拿到.<br>refreshToken 需要一连串的流程</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="同步异步关心的是消息通信机制所谓同步，就是在发出一个调用时，在没有得到结果之前，该调用就不返回。但是一旦调用返回，就得到返回值了。换句话说，就是由调用者主动等待这个调用的结果。而异步则是相反，调用在发出之后，这个调用就直接返回了，所以没有返回结果。换句话说，当一个异步过程调用发出后，调用者不会立刻得到结果。而是在调用发出后，被调用者通过状态、通知来通知调用者，或通过回调函数处理这个调用。例如：你打">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对 JS 异步非阻塞的理解">
+<meta property="og:url" content="http://hwl.me/2017/11/29/%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%20%E9%98%BB%E5%A1%9E%E9%9D%9E%E9%98%BB%E5%A1%9E/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="同步异步关心的是消息通信机制所谓同步，就是在发出一个调用时，在没有得到结果之前，该调用就不返回。但是一旦调用返回，就得到返回值了。换句话说，就是由调用者主动等待这个调用的结果。而异步则是相反，调用在发出之后，这个调用就直接返回了，所以没有返回结果。换句话说，当一个异步过程调用发出后，调用者不会立刻得到结果。而是在调用发出后，被调用者通过状态、通知来通知调用者，或通过回调函数处理这个调用。例如：你打">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-11-29T08:21:44.000Z">
+<meta property="article:modified_time" content="2017-11-29T10:28:47.000Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hwl.me/2017/11/29/%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%20%E9%98%BB%E5%A1%9E%E9%9D%9E%E9%98%BB%E5%A1%9E/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>对 JS 异步非阻塞的理解 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2017/11/29/%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%20%E9%98%BB%E5%A1%9E%E9%9D%9E%E9%98%BB%E5%A1%9E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          对 JS 异步非阻塞的理解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2017-11-29 16:21:44 / 修改时间：18:28:47" itemprop="dateCreated datePublished" datetime="2017-11-29T16:21:44+08:00">2017-11-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/11/29/%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%20%E9%98%BB%E5%A1%9E%E9%9D%9E%E9%98%BB%E5%A1%9E/" class="post-meta-item leancloud_visitors" data-flag-title="对 JS 异步非阻塞的理解" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2017/11/29/%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%20%E9%98%BB%E5%A1%9E%E9%9D%9E%E9%98%BB%E5%A1%9E/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2017/11/29/%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%20%E9%98%BB%E5%A1%9E%E9%9D%9E%E9%98%BB%E5%A1%9E/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="同步异步关心的是消息通信机制"><a href="#同步异步关心的是消息通信机制" class="headerlink" title="同步异步关心的是消息通信机制"></a>同步异步关心的是消息通信机制</h2><p>所谓同步，就是在发出一个<em>调用</em>时，在没有得到结果之前，该<em>调用</em>就不返回。但是一旦调用返回，就得到返回值了。<br>换句话说，就是由<em>调用者</em>主动等待这个<em>调用</em>的结果。<br>而异步则是相反，<em>调用</em>在发出之后，这个调用就直接返回了，所以没有返回结果。换句话说，当一个异步过程调用发出后，调用者不会立刻得到结果。而是在<em>调用</em>发出后，<em>被调用者</em>通过状态、通知来通知调用者，或通过回调函数处理这个调用。<br>例如：<br>你打电话问书店老板有没有《分布式系统》这本书，如果是同步通信机制，书店老板会说，你稍等，”我查一下”，然后开始查啊查，等查好了（可能是5秒，也可能是一天）告诉你结果（返回结果）。而异步通信机制，书店老板直接告诉你我查一下啊，查好了打电话给你，然后直接挂电话了（不返回结果）。然后查好了，他会主动打电话给你。在这里老板通过“回电”这种方式来回调。</p>
+<h3 id="同步异步关心的是结果的返回方式"><a href="#同步异步关心的是结果的返回方式" class="headerlink" title="同步异步关心的是结果的返回方式"></a>同步异步关心的是结果的返回方式</h3><span id="more"></span>
+<h2 id="阻塞与非阻塞阻塞和非阻塞关注的是程序在等待调用结果（消息，返回值）时的状态"><a href="#阻塞与非阻塞阻塞和非阻塞关注的是程序在等待调用结果（消息，返回值）时的状态" class="headerlink" title="阻塞与非阻塞阻塞和非阻塞关注的是程序在等待调用结果（消息，返回值）时的状态."></a>阻塞与非阻塞阻塞和非阻塞关注的是程序在等待调用结果（消息，返回值）时的状态.</h2><p>阻塞调用是指调用结果返回之前，当前线程会被挂起。调用线程只有在得到结果之后才会返回。非阻塞调用指在不能立刻得到结果之前，该调用不会阻塞当前线程。还是上面的例子，你打电话问书店老板有没有《分布式系统》这本书，你如果是阻塞式调用，你会一直把自己“挂起”，直到得到这本书有没有的结果，如果是非阻塞式调用，你不管老板有没有告诉你，你自己先一边去玩了， 当然你也要偶尔过几分钟check一下老板有没有返回结果。</p>
+<h3 id="也就是说阻塞与非阻塞关心的是线程发出调用后的状态。挂起还是非挂起。"><a href="#也就是说阻塞与非阻塞关心的是线程发出调用后的状态。挂起还是非挂起。" class="headerlink" title="也就是说阻塞与非阻塞关心的是线程发出调用后的状态。挂起还是非挂起。"></a>也就是说阻塞与非阻塞关心的是线程发出调用后的状态。挂起还是非挂起。</h3><h2 id="在这里阻塞与非阻塞与是否同步异步无关。跟老板通过什么方式回答你结果无关。"><a href="#在这里阻塞与非阻塞与是否同步异步无关。跟老板通过什么方式回答你结果无关。" class="headerlink" title="在这里阻塞与非阻塞与是否同步异步无关。跟老板通过什么方式回答你结果无关。"></a>在这里阻塞与非阻塞与是否同步异步无关。跟老板通过什么方式回答你结果无关。</h2><h2 id="总结：同异步是强调你找他还是他完成后来告诉你，阻非阻塞强调是否挂起（你在等待的时候是否可以做其他事）"><a href="#总结：同异步是强调你找他还是他完成后来告诉你，阻非阻塞强调是否挂起（你在等待的时候是否可以做其他事）" class="headerlink" title="总结：同异步是强调你找他还是他完成后来告诉你，阻非阻塞强调是否挂起（你在等待的时候是否可以做其他事）"></a>总结：同异步是强调你找他还是他完成后来告诉你，阻非阻塞强调是否挂起（你在等待的时候是否可以做其他事）</h2><h3 id="阻塞和非阻塞，应该描述的是一种状态，同步与非同步描述的是行为方式"><a href="#阻塞和非阻塞，应该描述的是一种状态，同步与非同步描述的是行为方式" class="headerlink" title="阻塞和非阻塞，应该描述的是一种状态，同步与非同步描述的是行为方式"></a>阻塞和非阻塞，应该描述的是一种状态，同步与非同步描述的是行为方式</h3><h2 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h2><p>同步阻塞：你打电话问老板有没有某书，老板去查，在老板给你结果之前，你一直拿着电话等待老板给你结果，你此时什么也干不了。<br>同步非阻塞：你打电话过去后，在老板给你结果之前，你拿着电话等待老板给你结果，但是你拿着电话等的时候可以干一些其他事，比如嗑瓜子。<br>异步阻塞：你打电话过去后，老板去查，你挂掉电话，等待老板给你打电话通知你，这是异步，你挂了电话后还是啥也干不了，只能一直等着老板给你打电话告诉你结果，这是阻塞。<br>异步非阻塞：你打电话过去后，你就挂了电话，然后你就想干嘛干嘛去。只用时不时去看看老板给你打电话没。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/29/JS%E7%AC%94%E8%AE%B0/" rel="prev" title="JS初学笔记">
+      <i class="fa fa-chevron-left"></i> JS初学笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/29/%E4%B8%BA%E4%BB%80%E4%B9%88JavaScript%E6%98%AF%E5%8D%95%E7%BA%BF%E7%A8%8B/" rel="next" title="为什么 JS 是单线程">
+      为什么 JS 是单线程 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E5%85%B3%E5%BF%83%E7%9A%84%E6%98%AF%E6%B6%88%E6%81%AF%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6"><span class="nav-number">1.</span> <span class="nav-text">同步异步关心的是消息通信机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E5%85%B3%E5%BF%83%E7%9A%84%E6%98%AF%E7%BB%93%E6%9E%9C%E7%9A%84%E8%BF%94%E5%9B%9E%E6%96%B9%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">同步异步关心的是结果的返回方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%BB%E5%A1%9E%E4%B8%8E%E9%9D%9E%E9%98%BB%E5%A1%9E%E9%98%BB%E5%A1%9E%E5%92%8C%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%85%B3%E6%B3%A8%E7%9A%84%E6%98%AF%E7%A8%8B%E5%BA%8F%E5%9C%A8%E7%AD%89%E5%BE%85%E8%B0%83%E7%94%A8%E7%BB%93%E6%9E%9C%EF%BC%88%E6%B6%88%E6%81%AF%EF%BC%8C%E8%BF%94%E5%9B%9E%E5%80%BC%EF%BC%89%E6%97%B6%E7%9A%84%E7%8A%B6%E6%80%81"><span class="nav-number">2.</span> <span class="nav-text">阻塞与非阻塞阻塞和非阻塞关注的是程序在等待调用结果（消息，返回值）时的状态.</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B9%9F%E5%B0%B1%E6%98%AF%E8%AF%B4%E9%98%BB%E5%A1%9E%E4%B8%8E%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%85%B3%E5%BF%83%E7%9A%84%E6%98%AF%E7%BA%BF%E7%A8%8B%E5%8F%91%E5%87%BA%E8%B0%83%E7%94%A8%E5%90%8E%E7%9A%84%E7%8A%B6%E6%80%81%E3%80%82%E6%8C%82%E8%B5%B7%E8%BF%98%E6%98%AF%E9%9D%9E%E6%8C%82%E8%B5%B7%E3%80%82"><span class="nav-number">2.1.</span> <span class="nav-text">也就是说阻塞与非阻塞关心的是线程发出调用后的状态。挂起还是非挂起。</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E8%BF%99%E9%87%8C%E9%98%BB%E5%A1%9E%E4%B8%8E%E9%9D%9E%E9%98%BB%E5%A1%9E%E4%B8%8E%E6%98%AF%E5%90%A6%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E6%97%A0%E5%85%B3%E3%80%82%E8%B7%9F%E8%80%81%E6%9D%BF%E9%80%9A%E8%BF%87%E4%BB%80%E4%B9%88%E6%96%B9%E5%BC%8F%E5%9B%9E%E7%AD%94%E4%BD%A0%E7%BB%93%E6%9E%9C%E6%97%A0%E5%85%B3%E3%80%82"><span class="nav-number">3.</span> <span class="nav-text">在这里阻塞与非阻塞与是否同步异步无关。跟老板通过什么方式回答你结果无关。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A%E5%90%8C%E5%BC%82%E6%AD%A5%E6%98%AF%E5%BC%BA%E8%B0%83%E4%BD%A0%E6%89%BE%E4%BB%96%E8%BF%98%E6%98%AF%E4%BB%96%E5%AE%8C%E6%88%90%E5%90%8E%E6%9D%A5%E5%91%8A%E8%AF%89%E4%BD%A0%EF%BC%8C%E9%98%BB%E9%9D%9E%E9%98%BB%E5%A1%9E%E5%BC%BA%E8%B0%83%E6%98%AF%E5%90%A6%E6%8C%82%E8%B5%B7%EF%BC%88%E4%BD%A0%E5%9C%A8%E7%AD%89%E5%BE%85%E7%9A%84%E6%97%B6%E5%80%99%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E5%81%9A%E5%85%B6%E4%BB%96%E4%BA%8B%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">总结：同异步是强调你找他还是他完成后来告诉你，阻非阻塞强调是否挂起（你在等待的时候是否可以做其他事）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%98%BB%E5%A1%9E%E5%92%8C%E9%9D%9E%E9%98%BB%E5%A1%9E%EF%BC%8C%E5%BA%94%E8%AF%A5%E6%8F%8F%E8%BF%B0%E7%9A%84%E6%98%AF%E4%B8%80%E7%A7%8D%E7%8A%B6%E6%80%81%EF%BC%8C%E5%90%8C%E6%AD%A5%E4%B8%8E%E9%9D%9E%E5%90%8C%E6%AD%A5%E6%8F%8F%E8%BF%B0%E7%9A%84%E6%98%AF%E8%A1%8C%E4%B8%BA%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text">阻塞和非阻塞，应该描述的是一种状态，同步与非同步描述的是行为方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90%EF%BC%9A"><span class="nav-number">5.</span> <span class="nav-text">例子：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

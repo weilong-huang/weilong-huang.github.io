@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Vue v-eventv-once   绑定属性，一旦生效，属性固定不再变 v-html  绑定值为 HTML 代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue 的各种 v-方法">
+<meta property="og:url" content="http://hwl.me/2018/06/26/Vue%20v-function/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="Vue v-eventv-once   绑定属性，一旦生效，属性固定不再变 v-html  绑定值为 HTML 代码">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://p04c6djlz.bkt.clouddn.com//18-6-27/86590836.jpg">
+<meta property="article:published_time" content="2018-06-26T10:16:18.000Z">
+<meta property="article:modified_time" content="2018-07-03T10:19:43.000Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://p04c6djlz.bkt.clouddn.com//18-6-27/86590836.jpg">
+
+<link rel="canonical" href="http://hwl.me/2018/06/26/Vue%20v-function/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Vue 的各种 v-方法 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2018/06/26/Vue%20v-function/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue 的各种 v-方法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-26 18:16:18" itemprop="dateCreated datePublished" datetime="2018-06-26T18:16:18+08:00">2018-06-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-07-03 18:19:43" itemprop="dateModified" datetime="2018-07-03T18:19:43+08:00">2018-07-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">前端学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/06/26/Vue%20v-function/" class="post-meta-item leancloud_visitors" data-flag-title="Vue 的各种 v-方法" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/06/26/Vue%20v-function/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/06/26/Vue%20v-function/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Vue-v-event"><a href="#Vue-v-event" class="headerlink" title="Vue v-event"></a>Vue v-event</h1><h2 id="v-once"><a href="#v-once" class="headerlink" title="v-once"></a>v-once</h2><p>   绑定属性，一旦生效，属性固定不再变</p>
+<h2 id="v-html"><a href="#v-html" class="headerlink" title="v-html"></a>v-html</h2><p>  绑定值为 HTML 代码</p>
+<span id="more"></span>
+<h2 id="v-bind"><a href="#v-bind" class="headerlink" title="v-bind"></a>v-bind</h2><p>  绑定HTML 属性的值，例如</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;app&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span> <span class="attr">v-bind:title</span>=<span class="string">&quot;title&quot;</span>&gt;</span>html属性不能使用双大括号形式绑定，只能使用v-bind指令<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> vm = <span class="keyword">new</span> <span class="title class_">Vue</span>(&#123;</span><br><span class="line">    <span class="attr">el</span>: <span class="string">&#x27;#app&#x27;</span>,</span><br><span class="line">    <span class="attr">data</span>: &#123;</span><br><span class="line">        <span class="attr">title</span>: <span class="string">&#x27;title content&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<!--more-->
+
+<h2 id="v-on"><a href="#v-on" class="headerlink" title="v-on"></a>v-on</h2><p>  用于监听子组件触发的事件 </p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;counter-event-example&quot;</span></span></span><br><span class="line"><span class="tag">   &lt;<span class="attr">p</span>&gt;</span>&#123;&#123; total &#125;&#125;&lt;/p</span><br><span class="line"> &gt; <span class="tag">&lt;<span class="name">button-counter</span> <span class="attr">v-on:increment</span>=<span class="string">&quot;incrementTotal&quot;</span>&gt;</span>&lt;/button-counter</span><br><span class="line">   <span class="tag">&lt;<span class="name">button-counter</span> <span class="attr">v-on:increment</span>=<span class="string">&quot;incrementTotal&quot;</span>&gt;</span>&lt;/button-counter</span><br><span class="line"> <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;button-counter&#x27;</span>, </span><br><span class="line">   <span class="attr">template</span>: <span class="string">&#x27;&lt;button v-on:click=&quot;increment&quot;&gt;&#123;&#123; counter &#125;&#125;&lt;/button&gt;&#x27;</span></span><br><span class="line">   <span class="attr">data</span>: <span class="keyword">function</span> (<span class="params"></span>) </span><br><span class="line">      <span class="keyword">return</span> &#123; <span class="attr">counter</span>: <span class="number">0</span> &#125;</span><br><span class="line">   &#125;,</span><br><span class="line">   <span class="attr">methods</span>: </span><br><span class="line">    <span class="attr">increment</span>: <span class="keyword">function</span> (<span class="params"></span>) </span><br><span class="line">     <span class="variable language_">this</span>.<span class="property">counter</span> += <span class="number">1</span> </span><br><span class="line">     <span class="variable language_">this</span>.$emit(<span class="string">&#x27;increment&#x27;</span>) &#125;</span><br><span class="line">   &#125;,</span><br><span class="line"> &#125;)</span><br><span class="line"> <span class="keyword">new</span> <span class="title class_">Vue</span>(</span><br><span class="line">  <span class="attr">el</span>: <span class="string">&#x27;#counter-event-example&#x27;</span></span><br><span class="line">  <span class="attr">data</span>: &#123; <span class="attr">total</span>: <span class="number">0</span> &#125;</span><br><span class="line">  <span class="attr">methods</span>: </span><br><span class="line">    <span class="attr">incrementTotal</span>: <span class="keyword">function</span> (<span class="params"></span>) </span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">total</span> += <span class="number">1</span></span><br><span class="line">     &#125;</span><br><span class="line"> &#125;)</span><br></pre></td></tr></table></figure>
+<p><code>this.$emit(&#39;increment&#39;)</code><br>通过这句函数可以让父组件知道子组件调用了什么函数，this.$emit(‘increment’) 即类似于子组件跟父组件说了一声“hi，爸爸 我调用了我自己的increment函数”，通知父组件</p>
+<p><code>v-on:increment=&quot;incrementTotal&quot;</code><br>就是说“孩子，当你调用了increment函数的时候，我将调用incrementTotal函数来回应你”</p>
+<blockquote>
+<p>在子组件我们已经使用emit来进行通知，所以，这样就形成父子组件间的相互呼应传递信息，其实在开发的过程中父子组件通讯也都是使用这样的方法，父组件传递信息给子组件的时候会通过props参数，通常不会直接在子组件中修改父组件传递下来的信息，而且通过这样的一个钩子去通知父组件对某些参数进行改变</p>
+</blockquote>
+<h2 id="v-if"><a href="#v-if" class="headerlink" title="v-if"></a>v-if</h2><p>  绑定的参数如果是真值 truthy， 就渲染，否则就不渲染.</p>
+<h2 id="v-else"><a href="#v-else" class="headerlink" title="v-else"></a>v-else</h2><p>  和 v-if 一起使用</p>
+<h2 id="v-show"><a href="#v-show" class="headerlink" title="v-show"></a>v-show</h2><p>  效果和 v-if&#x3D;‘false’一样，不过代码层面， v-if&#x3D;‘false’ 是直接不渲染，而 v-show&#x3D;‘false’ 是&#96;&#96;diplay: noneb</p>
+<h2 id="v-for"><a href="#v-for" class="headerlink" title="v-for"></a>v-for</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">li</span> <span class="attr">v-for</span>=<span class="string">&quot;item in items&quot;</span>&gt;</span>&#123;&#123;item.text&#125;&#125;<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">data</span>:&#123;</span><br><span class="line">    <span class="attr">items</span>:[</span><br><span class="line">        &#123;<span class="attr">text</span>:<span class="string">&quot;第一组&quot;</span>&#125;，</span><br><span class="line">        &#123;<span class="attr">text</span>:<span class="string">&quot;第二组&quot;</span>&#125;，</span><br><span class="line">        &#123;<span class="attr">text</span>:<span class="string">&quot;第三组&quot;</span>&#125;，</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样渲染出来的就是</p>
+<ul>
+<li>第一组</li>
+<li>第二组</li>
+<li>第三组</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;todo-list-example&quot;</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">form</span> <span class="attr">v-on:submit.prevent</span>=<span class="string">&quot;addNewTodo&quot;</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;new-todo&quot;</span>&gt;</span>Add a todo<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">input</span> </span></span><br><span class="line"><span class="tag">     <span class="attr">v-model</span>=<span class="string">&quot;newTodoText&quot;</span> </span></span><br><span class="line"><span class="tag">     <span class="attr">id</span>=<span class="string">&quot;new-todo&quot;</span> </span></span><br><span class="line"><span class="tag">     <span class="attr">placeholder</span>=<span class="string">&quot;E.g. Feed the cat&quot;</span></span></span><br><span class="line"><span class="tag">     &gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">button</span>&gt;</span>Add<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">li</span></span></span><br><span class="line"><span class="tag">     <span class="attr">is</span>=<span class="string">&quot;todo-item&quot;</span></span></span><br><span class="line"><span class="tag">     <span class="attr">v-for</span>=<span class="string">&quot;(todo, index) in todos&quot;</span></span></span><br><span class="line"><span class="tag">     <span class="attr">v-bind:key</span>=<span class="string">&quot;todo.id&quot;</span></span></span><br><span class="line"><span class="tag">     <span class="attr">v-bind:title</span>=<span class="string">&quot;todo.title&quot;</span></span></span><br><span class="line"><span class="tag">     <span class="attr">v-on:remove</span>=<span class="string">&quot;todos.splice(index, 1)&quot;</span></span></span><br><span class="line"><span class="tag">     &gt;</span><span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="title function_">component</span>(<span class="string">&#x27;todo-item&#x27;</span>, &#123;</span><br><span class="line">   <span class="attr">template</span>: <span class="string">&#x27;\</span></span><br><span class="line"><span class="string">   &lt;li&gt;\</span></span><br><span class="line"><span class="string">   &#123;&#123; title &#125;&#125;\</span></span><br><span class="line"><span class="string">   &lt;button v-on:click=&quot;$emit(\&#x27;remove\&#x27;)&quot;&gt;Remove&lt;/button&gt;\</span></span><br><span class="line"><span class="string">   &lt;/li&gt;\</span></span><br><span class="line"><span class="string">   &#x27;</span>,</span><br><span class="line">   <span class="attr">props</span>: [<span class="string">&#x27;title&#x27;</span>]</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Vue</span>(&#123;</span><br><span class="line">   <span class="attr">el</span>: <span class="string">&#x27;#todo-list-example&#x27;</span>,</span><br><span class="line">   <span class="attr">data</span>: &#123;</span><br><span class="line">   <span class="attr">newTodoText</span>: <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">   <span class="attr">todos</span>: [</span><br><span class="line">   &#123;</span><br><span class="line">   <span class="attr">id</span>: <span class="number">1</span>,</span><br><span class="line">   <span class="attr">title</span>: <span class="string">&#x27;Do the dishes&#x27;</span>,</span><br><span class="line">   &#125;,</span><br><span class="line">   &#123;</span><br><span class="line">   <span class="attr">id</span>: <span class="number">2</span>,</span><br><span class="line">   <span class="attr">title</span>: <span class="string">&#x27;Take out the trash&#x27;</span>,</span><br><span class="line">   &#125;,</span><br><span class="line">   &#123;</span><br><span class="line">   <span class="attr">id</span>: <span class="number">3</span>,</span><br><span class="line">   <span class="attr">title</span>: <span class="string">&#x27;Mow the lawn&#x27;</span></span><br><span class="line">   &#125;</span><br><span class="line">   ],</span><br><span class="line">   <span class="attr">nextTodoId</span>: <span class="number">4</span></span><br><span class="line"> &#125;,</span><br><span class="line">   <span class="attr">methods</span>: &#123;</span><br><span class="line">   <span class="attr">addNewTodo</span>: <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">   <span class="variable language_">this</span>.<span class="property">todos</span>.<span class="title function_">push</span>(&#123;</span><br><span class="line">   <span class="attr">id</span>: <span class="variable language_">this</span>.<span class="property">nextTodoId</span>++,</span><br><span class="line">   <span class="attr">title</span>: <span class="variable language_">this</span>.<span class="property">newTodoText</span></span><br><span class="line">   &#125;)</span><br><span class="line">   <span class="variable language_">this</span>.<span class="property">newTodoText</span> = <span class="string">&#x27;&#x27;</span></span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://p04c6djlz.bkt.clouddn.com//18-6-27/86590836.jpg"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/22/CSS%20%E9%80%89%E6%8B%A9%E5%99%A8%E4%BC%98%E5%85%88%E7%BA%A7/" rel="prev" title="CSS 选择器及优先级">
+      <i class="fa fa-chevron-left"></i> CSS 选择器及优先级
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/06/28/Vue%20%E8%A1%A8%E5%8D%95%E8%BE%93%E5%85%A5%E7%BB%91%E5%AE%9A/" rel="next" title="Vue 表单输入绑定">
+      Vue 表单输入绑定 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Vue-v-event"><span class="nav-number">1.</span> <span class="nav-text">Vue v-event</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#v-once"><span class="nav-number">1.1.</span> <span class="nav-text">v-once</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v-html"><span class="nav-number">1.2.</span> <span class="nav-text">v-html</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v-bind"><span class="nav-number">1.3.</span> <span class="nav-text">v-bind</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v-on"><span class="nav-number">1.4.</span> <span class="nav-text">v-on</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v-if"><span class="nav-number">1.5.</span> <span class="nav-text">v-if</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v-else"><span class="nav-number">1.6.</span> <span class="nav-text">v-else</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v-show"><span class="nav-number">1.7.</span> <span class="nav-text">v-show</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v-for"><span class="nav-number">1.8.</span> <span class="nav-text">v-for</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

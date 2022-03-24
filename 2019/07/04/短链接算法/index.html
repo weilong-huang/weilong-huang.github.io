@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="背景分享到微博或者推特都有 140 字的限制,所以最近产品提出一个分享 URL 要做成短链接的需求,便在网上查询了一下资料,综合下来,总结了几种算法. 算法总的来说就是把长的 URL 通过一个算法得出一个 6 位左右的短链,再把这个映射关系保存起来,下次有用户访问短链的时候我们能找到他对应的长链.并通过301 或者 302 重定向到原来的 URL 上. 1. 自增 id 转 62 进制从数据库或者">
+<meta property="og:type" content="article">
+<meta property="og:title" content="短链接算法">
+<meta property="og:url" content="http://hwl.me/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="背景分享到微博或者推特都有 140 字的限制,所以最近产品提出一个分享 URL 要做成短链接的需求,便在网上查询了一下资料,综合下来,总结了几种算法. 算法总的来说就是把长的 URL 通过一个算法得出一个 6 位左右的短链,再把这个映射关系保存起来,下次有用户访问短链的时候我们能找到他对应的长链.并通过301 或者 302 重定向到原来的 URL 上. 1. 自增 id 转 62 进制从数据库或者">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190704142037.png">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190709114800.jpg">
+<meta property="article:published_time" content="2019-07-04T03:26:14.000Z">
+<meta property="article:modified_time" content="2019-07-09T06:04:16.000Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190704142037.png">
+
+<link rel="canonical" href="http://hwl.me/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>短链接算法 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          短链接算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-07-04 11:26:14" itemprop="dateCreated datePublished" datetime="2019-07-04T11:26:14+08:00">2019-07-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-07-09 14:04:16" itemprop="dateModified" datetime="2019-07-09T14:04:16+08:00">2019-07-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/" class="post-meta-item leancloud_visitors" data-flag-title="短链接算法" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/07/04/%E7%9F%AD%E9%93%BE%E6%8E%A5%E7%AE%97%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>分享到微博或者推特都有 140 字的限制,所以最近产品提出一个分享 URL 要做成短链接的需求,便在网上查询了一下资料,综合下来,总结了几种算法.</p>
+<h1 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h1><p>总的来说就是把长的 URL 通过一个算法得出一个 6 位左右的短链,再把这个映射关系保存起来,下次有用户访问短链的时候我们能找到他对应的长链.并通过301 或者 302 重定向到原来的 URL 上.</p>
+<h2 id="1-自增-id-转-62-进制"><a href="#1-自增-id-转-62-进制" class="headerlink" title="1. 自增 id 转 62 进制"></a>1. 自增 id 转 62 进制</h2><p>从数据库或者 redis 里取一个自增数据,然后十进制转化成 62 进制,这样短链就永远不会重复,适合于原始 URL 1 对多的情况,也就是一个长链接每次分享都生成不一样的短链接.<br><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190704142037.png"><br>就算是一亿对应的 62 进制数也就是 6LAze,短短的 5 位.<br><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190709114800.jpg"></p>
+<p>最小的 7 位 62 进制数对应的十进制数是 56800235584,五百六十八亿多,远超当前的所有URL 总和.所以 6 位数的 62 进制是肯定够用的.</p>
+<span id="more"></span>
+<h3 id="为什么是-62-进制"><a href="#为什么是-62-进制" class="headerlink" title="为什么是 62 进制?"></a>为什么是 62 进制?</h3><p>因为用 0-9 a-z A-Z刚好是 62 位,如果用 64 位就可能会产生&#x2F;或者+,这在 URL 解析的时候可能会发生问题,所以使用 62 进制更加安全</p>
+<h2 id="2-哈希值截取"><a href="#2-哈希值截取" class="headerlink" title="2. 哈希值截取"></a>2. 哈希值截取</h2><p>这个方法比较简单,直接对 URL 进行哈希计算,然后取其中的 6 位.这种算法可能会出现重复,所以算出来后需要对数据库进行一次碰撞,如果重复一次.直到数据库里没有,即为短连接.这种方法有点在于快捷而且算法很简单.适合数据量比较小的服务.</p>
+<h1 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h1><p>长链到锻炼映射关系需要存储起来.<br>短链到长链的映射肯定是需要用 redis 这样的高速缓存来做,因为页面的访问频率肯定会比较高,如果全部存在数据库里,当用户量比较大时,大量数据库连接会让数据库变得非常慢,甚至挂掉.如果需要做到持久化,也就是这个短链永久有效的话,那还是需要存一份数据库,当redis 找不到时,再去查数据库.</p>
+<h1 id="为什么要用-301-跳转而不是-302？"><a href="#为什么要用-301-跳转而不是-302？" class="headerlink" title="为什么要用 301 跳转而不是 302？"></a>为什么要用 301 跳转而不是 302？</h1><p>301 是永久重定向，302 是临时重定向。短地址一经生成就不会变化，所以用 301 是符合 http 语义的。同时对服务器压力也会有一定减少。<br>但是如果使用了 301，我们就无法统计到短地址被点击的次数了。而这个点击次数是一个非常有意思的大数据分析数据源。能够分析出的东西非常非常多。所以选择302虽然会增加服务器压力，但是我想是一个更好的选择。</p>
+<h1 id="安全问题"><a href="#安全问题" class="headerlink" title="安全问题"></a>安全问题</h1><p>如果是长链一对多的情况,那黑客进行大量的请求,很可能会快速消耗短链个数,那可以结合一对多和一对一的策略,在生成锻炼的逻辑中,存储长链到短链的 redis 记录,并设置一个比较短的过期时间,比如 10 分钟,用LRU机制进行淘汰.在生成之前先查询一次redis,如果存在则直接返回短链,并刷新过期时间,如果不存在再去生成.</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://hufangyun.com/2017/short-url/">参考博客</a><br><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/20103344">知乎</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/06/27/%E7%A5%9E%E5%A5%87%E7%9A%84%20null%20%3E=%200/" rel="prev" title="神奇的 null >= 0">
+      <i class="fa fa-chevron-left"></i> 神奇的 null >= 0
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/07/26/node.js%E7%BD%91%E7%BB%9C%E9%94%99%E8%AF%AF/" rel="next" title="nodejs 网络错误信息">
+      nodejs 网络错误信息 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%87%AA%E5%A2%9E-id-%E8%BD%AC-62-%E8%BF%9B%E5%88%B6"><span class="nav-number">2.1.</span> <span class="nav-text">1. 自增 id 转 62 进制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF-62-%E8%BF%9B%E5%88%B6"><span class="nav-number">2.1.1.</span> <span class="nav-text">为什么是 62 进制?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%93%88%E5%B8%8C%E5%80%BC%E6%88%AA%E5%8F%96"><span class="nav-number">2.2.</span> <span class="nav-text">2. 哈希值截取</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%98%E5%82%A8"><span class="nav-number">3.</span> <span class="nav-text">存储</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8-301-%E8%B7%B3%E8%BD%AC%E8%80%8C%E4%B8%8D%E6%98%AF-302%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">为什么要用 301 跳转而不是 302？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98"><span class="nav-number">5.</span> <span class="nav-text">安全问题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

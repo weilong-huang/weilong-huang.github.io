@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="redis简介简单的讲,redis 是一个非常高效的简单数据库,这个数据库只有5种数据结构.因为 redis 具有速度快,可以设置过期时间的特性,常被用来做缓存. 数据结构 string 字符串 hash 多个键值对的集合 set 集合 sorted set 有序集合 list 列表  基本命令redis 的五种数据结构其实也都是键值对,区别在于键值对的值不一样,不一样的数据结构的值可能又是另一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="redis 基本操作与五大数据类型">
+<meta property="og:url" content="http://hwl.me/2019/04/03/reids%20%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="redis简介简单的讲,redis 是一个非常高效的简单数据库,这个数据库只有5种数据结构.因为 redis 具有速度快,可以设置过期时间的特性,常被用来做缓存. 数据结构 string 字符串 hash 多个键值对的集合 set 集合 sorted set 有序集合 list 列表  基本命令redis 的五种数据结构其实也都是键值对,区别在于键值对的值不一样,不一样的数据结构的值可能又是另一个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403171809.jpg">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403171846.jpg">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403174748.jpg">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403180034.jpg">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403183230.jpg">
+<meta property="article:published_time" content="2019-04-03T07:48:43.000Z">
+<meta property="article:modified_time" content="2019-04-04T03:05:07.000Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403171809.jpg">
+
+<link rel="canonical" href="http://hwl.me/2019/04/03/reids%20%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>redis 基本操作与五大数据类型 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/04/03/reids%20%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          redis 基本操作与五大数据类型
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-03 15:48:43" itemprop="dateCreated datePublished" datetime="2019-04-03T15:48:43+08:00">2019-04-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-04-04 11:05:07" itemprop="dateModified" datetime="2019-04-04T11:05:07+08:00">2019-04-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/04/03/reids%20%E6%80%BB%E7%BB%93/" class="post-meta-item leancloud_visitors" data-flag-title="redis 基本操作与五大数据类型" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/04/03/reids%20%E6%80%BB%E7%BB%93/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/04/03/reids%20%E6%80%BB%E7%BB%93/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="redis"><a href="#redis" class="headerlink" title="redis"></a>redis</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>简单的讲,redis 是一个非常高效的简单数据库,这个数据库只有5种数据结构.<br>因为 redis 具有速度快,可以设置过期时间的特性,常被用来做缓存.</p>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><ol>
+<li>string 字符串</li>
+<li>hash 多个键值对的集合</li>
+<li>set 集合</li>
+<li>sorted set 有序集合</li>
+<li>list 列表</li>
+</ol>
+<h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><p>redis 的五种数据结构其实也都是键值对,区别在于键值对的值不一样,不一样的数据结构的值可能又是另一个键值对,或者是一系列的键值对.<br>但是就像 JavaScript 中所有的数据结构都是从 Object 类型继承来的一样,redis 也可以类比成这样.五种数据结构都继承于键值对,所以也会有一些通用的方法.</p>
+<h3 id="redis基本命令"><a href="#redis基本命令" class="headerlink" title="redis基本命令"></a><a target="_blank" rel="noopener" href="http://www.runoob.com/redis/redis-keys.html">redis基本命令</a></h3><span id="more"></span>
+
+<p>其中比较常用的有:</p>
+<ul>
+<li>del key - 删除 key</li>
+<li>exists key - 判断可以是否存在,存在返回1,不存在返回0</li>
+<li>expire key - 给 key 设置过期时间,单位为秒</li>
+<li>pexprie key - 给 key 设置过期时间,单位是毫秒</li>
+<li>expireat key - 给key 设置过期时间,区别在于这里的参数是 Unix 时间戳</li>
+<li>rename key newKey - 重命名 key, 这个操作如果key 不存在会报错,所以使用前需要先用 exists key 判断一下,并且如果 newKey 已经存在的话会覆盖,所以最好也判断一下 exists newKey</li>
+<li>renamenx key newKey - 重命名key, 仅当 newKey 不存在时成功,就可以少判断一次 exists newKey 了</li>
+</ul>
+<h2 id="string-类型"><a href="#string-类型" class="headerlink" title="string 类型"></a>string 类型</h2><p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403171809.jpg"></p>
+<p>string 类型非常简单,就是最简单的键值对,key 是一个 string, value 也是一个 string.<br>最常用的命令也就是 get,set,可以说是其他类型的一个基类了.</p>
+<h3 id="string-基本命令"><a href="#string-基本命令" class="headerlink" title="string 基本命令"></a><a target="_blank" rel="noopener" href="http://www.runoob.com/redis/redis-strings.html">string 基本命令</a></h3><h3 id="set方法可直接设置过期时间-需要几个可选参数"><a href="#set方法可直接设置过期时间-需要几个可选参数" class="headerlink" title="set方法可直接设置过期时间,需要几个可选参数"></a>set方法可直接设置过期时间,需要几个可选参数</h3><p>redis.set(key, value, timeType[opt], time[opt], NX|XX[opt])<br>其中 timeType:</p>
+<ul>
+<li>‘EX’ 指的是 time 的单位是秒</li>
+<li>‘PX’ 指的是 time 的单位是毫秒</li>
+</ul>
+<p>这 NX|XX 意思是: </p>
+<ul>
+<li>‘NX’ 只有当 key 不存在时才设置过期时间</li>
+<li>‘XX’ 只有当 key 存在时才设置过期时间</li>
+</ul>
+<h2 id="hash-类型"><a href="#hash-类型" class="headerlink" title="hash 类型"></a>hash 类型</h2><p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403171846.jpg"></p>
+<blockquote>
+<p>hash 是一个string类型的field和value的映射表，hash特别适合用于存储对象。<br>Redis 中每个 hash 可以存储 232 - 1 键值对（40多亿）。</p>
+</blockquote>
+<p>这里引入了一个 field的概念,其实 hash 就是一个 value 是多个 string 类型键值对集合的键值对,这里的 field 就是 一个二级 key.<br>不过不能无限分级下去,这个 field 对应的 value 就一定是一个 string 字符串<br>hash 的命令主要是在 string 的基础上最前面加个h,类似的: </p>
+<ul>
+<li>hdel key field1 field2 … - 删除 field</li>
+<li>hexists key field - 判断存在与否</li>
+<li>hset key field value - 写入 field 的值</li>
+<li>hget key field - 获取key 下某 field 的值</li>
+<li>hlen key - 获取 field 的数量</li>
+<li>hkeys key - 获取所有 field 的name</li>
+</ul>
+<p>因为一个 key下可以有几乎无数个 field,所以就会有批量操作: </p>
+<ul>
+<li>hmset key field1 value1 field2 value2.. - js 中把 field 和 value 按顺序的放入数组中,就可以批量写入例如 <code>redis.hset(key, [field1, value1, field2, value2...])</code></li>
+<li>hmget key filed1 field2 field3.. - 同理,会按field 的顺序返回value 数组</li>
+<li>hgetall key - 获取 key 下的所有 field,但如果 field 数量过多,可能会导致 redis 堵塞,所以在不确定一个 hash key 下有多少 field 的情况,不推荐使用.</li>
+<li>hscan key cursor [MATCH pattern] [COUNT count] - 扫描器,可以做类似分页查询的操作,还可以做模糊查询 cursor 就是游标起点,count 就是 pagesize. 模糊查询就是 match 后面加正则匹配查询但是用hscan 做分页查询是不能排序,只能按原 key 的 field 排序获取, 返回[field, value]</li>
+</ul>
+<h3 id="hash-基本命令"><a href="#hash-基本命令" class="headerlink" title="hash 基本命令"></a><a target="_blank" rel="noopener" href="http://www.runoob.com/redis/redis-sets.html">hash 基本命令</a></h3><h2 id="set-类型"><a href="#set-类型" class="headerlink" title="set 类型"></a>set 类型</h2><p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403174748.jpg"></p>
+<blockquote>
+<p>Redis 的 Set 是 String 类型的无序集合。集合成员是唯一的，这就意味着集合中不能出现重复的数据。<br>Redis 中集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是 O(1)。<br>集合中最大的成员数为 232 - 1 (4294967295, 每个集合可存储40多亿个成员)。</p>
+</blockquote>
+<h3 id="简单的说-set-就是一个-field-不可重复-且-value-x3D-field-的-hash"><a href="#简单的说-set-就是一个-field-不可重复-且-value-x3D-field-的-hash" class="headerlink" title="简单的说,set 就是一个 field 不可重复,且 value&#x3D;field 的 hash"></a>简单的说,set 就是一个 field 不可重复,且 value&#x3D;field 的 hash</h3><p>set 类型大多用在统计人数等不可重复的情况下.<br>常用的命令有:</p>
+<ul>
+<li>sadd key member1 member2 - 给集合添加成员,这里又引入了 member 的概念,应该是为了区分 field</li>
+<li>sismember key member - 判断 member 是否是 key 的成员</li>
+<li>scard key - 获取 key 的总 member 数</li>
+<li>srem key member1 member2 - 移除 key 中的一个或多个成员</li>
+<li>smembers key - 返回集合中的所有成员,同样的可能会出现堵塞,所以也有扫描器</li>
+<li>sscan key cursor [match pattern] [count count] - 扫描器,返回 member</li>
+</ul>
+<p>set 还有一些差集,交集的离散数学操作.</p>
+<h3 id="set-基本命令"><a href="#set-基本命令" class="headerlink" title="set 基本命令"></a><a target="_blank" rel="noopener" href="http://www.runoob.com/redis/redis-sets.html">set 基本命令</a></h3><h2 id="sorted-set-类型"><a href="#sorted-set-类型" class="headerlink" title="sorted set 类型"></a>sorted set 类型</h2><p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403180034.jpg"></p>
+<p>有序集合就是在集合 set 的基础上,给每个 member 再附上一个double 类型的分数score.member 虽然要是唯一的,但是 score 是可以重复的.我们可以用这个 score 来实现排序.</p>
+<p>常用的命令有: </p>
+<ul>
+<li>zadd key [score1,member1,score2,member2…] - 给key 添加带 score 的成员,sore 是必选参数.</li>
+<li>zcard key - 获取集合成员数</li>
+<li>zrem key [member1,member2..] - 移除一个或多个成员</li>
+<li>zscore key member - 获取成员的分数值</li>
+</ul>
+<p>除了常规是增加删除外还有关于 score 的操作:</p>
+<ul>
+<li>zcount key min max - 计算 score 在这个区间内的 member 有多少</li>
+<li>zrangebyscore key min max [withscore] [limit offset count] - 返回分数在这个区间的成员,其中,无穷小,无穷大用-inf,+inf 表示. 如果withscore 的话就会返回 [member,score]这样的结构,还可以指定 limit, offset, count来做分页查询.js 中一般是<code>redis.zrangebyscore([key, &#39;-inf&#39;, &#39;+inf&#39;, &#39;limit&#39;, offset, pagesize])</code> 返回值是从小到大排序</li>
+<li>zrevrangebyscore key max min [withsocre] [limit offset count] - 同上,不过是最大最小反过来</li>
+<li>zremrangebyrank key min max - 删除 score 从min 到 max 之间的 member</li>
+<li>zremrangebylex key start stop - 删除在 start成员到 stop 成员之间的所有成员(包括边界),lex指的是在有序 set 中的某一成员</li>
+<li>zrange key start stop [withscore] - 返回下角标在 start 到 stop 之间(包括边界)的所有成员,这里是 start 和 stop 就是成员在 sorted set 中的排序,从0开始. 如果是<code>redis.zrange(key, 0, -1)</code>就是 返回所有成员, 想知道成员的下角标可以用 zrank</li>
+<li>zrank key member - 返回成员的索引指,即下角标</li>
+<li>zscan key cursor [match pattern] [count count] - 有序集合同样也有扫描器</li>
+</ul>
+<h3 id="sorted-set-基本命令"><a href="#sorted-set-基本命令" class="headerlink" title="sorted set 基本命令"></a><a target="_blank" rel="noopener" href="http://www.runoob.com/redis/redis-sorted-sets.html">sorted set 基本命令</a></h3><h2 id="list-类型"><a href="#list-类型" class="headerlink" title="list 类型"></a>list 类型</h2><p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190403183230.jpg"></p>
+<p>list 类型就是数据结构中的队列加栈,因为 list 类型既可以从头部(左边)添加元素,也可以从尾部(右边)添加元素,删除元素也是一样,但必须是按序的,不能添加或者删除中间的元素.</p>
+<p>常用的命令有: </p>
+<ul>
+<li>lpush key [value1, value2..] - 添加一个或多个元素到队首</li>
+<li>lpop key - 移出队首的第一个元素</li>
+<li>rpush key [value1, value2..] - 添加一个或多个元素到队尾</li>
+<li>rpop key - 移出队尾的第一个元素</li>
+<li>llen key - 获取队列长度</li>
+</ul>
+<p>用以上的几个命令就可以组成队列操作和栈操作<br> lpush + lpop 或者 rpush + rpop就是栈操作<br> lpush + rpop 就是队首在右边的队列操作<br> rpush + lpop 就是队首在左边的队列操作</p>
+<p><a target="_blank" rel="noopener" href="http://www.runoob.com/redis/redis-lists.html">list 基本命令</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/18/ubuntu%20%E5%AE%89%E8%A3%85%20ss/" rel="prev" title="在 Ubuntu 上安装 ss">
+      <i class="fa fa-chevron-left"></i> 在 Ubuntu 上安装 ss
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/" rel="next" title="google服务">
+      google服务 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#redis"><span class="nav-number">1.</span> <span class="nav-text">redis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.3.</span> <span class="nav-text">基本命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.3.1.</span> <span class="nav-text">redis基本命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#string-%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">string 类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#string-%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.4.1.</span> <span class="nav-text">string 基本命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#set%E6%96%B9%E6%B3%95%E5%8F%AF%E7%9B%B4%E6%8E%A5%E8%AE%BE%E7%BD%AE%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4-%E9%9C%80%E8%A6%81%E5%87%A0%E4%B8%AA%E5%8F%AF%E9%80%89%E5%8F%82%E6%95%B0"><span class="nav-number">1.4.2.</span> <span class="nav-text">set方法可直接设置过期时间,需要几个可选参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash-%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">hash 类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#hash-%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.5.1.</span> <span class="nav-text">hash 基本命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#set-%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.6.</span> <span class="nav-text">set 类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E8%AF%B4-set-%E5%B0%B1%E6%98%AF%E4%B8%80%E4%B8%AA-field-%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D-%E4%B8%94-value-x3D-field-%E7%9A%84-hash"><span class="nav-number">1.6.1.</span> <span class="nav-text">简单的说,set 就是一个 field 不可重复,且 value&#x3D;field 的 hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#set-%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.6.2.</span> <span class="nav-text">set 基本命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sorted-set-%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.7.</span> <span class="nav-text">sorted set 类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sorted-set-%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">1.7.1.</span> <span class="nav-text">sorted set 基本命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#list-%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.8.</span> <span class="nav-text">list 类型</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

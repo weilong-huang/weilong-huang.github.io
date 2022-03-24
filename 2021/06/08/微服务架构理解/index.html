@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="什么是微服务微服务没有一个明确的定义,只能通过和传统的服务对比,才比较好理解什么是微服务.传统服务是将绝大多数的业务 api 都集成在一个工程里. 优点是: 开发简单直接，集中式管理 基本不会重复开发 功能都在本地，没有分布式的管理开销和调用开销  但是同样的,缺点也很多: 开发效率低：所有的开发在一个项目改代码，递交代码相互等待，代码冲突不断 代码维护难：代码功能耦合在一起，新人不知道何从下手">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微服务架构">
+<meta property="og:url" content="http://hwl.me/2021/06/08/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%90%86%E8%A7%A3/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="什么是微服务微服务没有一个明确的定义,只能通过和传统的服务对比,才比较好理解什么是微服务.传统服务是将绝大多数的业务 api 都集成在一个工程里. 优点是: 开发简单直接，集中式管理 基本不会重复开发 功能都在本地，没有分布式的管理开销和调用开销  但是同样的,缺点也很多: 开发效率低：所有的开发在一个项目改代码，递交代码相互等待，代码冲突不断 代码维护难：代码功能耦合在一起，新人不知道何从下手">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210608145148.png">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210608160141.png">
+<meta property="article:published_time" content="2021-06-08T06:18:56.803Z">
+<meta property="article:modified_time" content="2021-06-08T08:06:25.031Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210608145148.png">
+
+<link rel="canonical" href="http://hwl.me/2021/06/08/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%90%86%E8%A7%A3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>微服务架构 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2021/06/08/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%90%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          微服务架构
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-06-08 14:18:56 / 修改时间：16:06:25" itemprop="dateCreated datePublished" datetime="2021-06-08T14:18:56+08:00">2021-06-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/06/08/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%90%86%E8%A7%A3/" class="post-meta-item leancloud_visitors" data-flag-title="微服务架构" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/06/08/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%90%86%E8%A7%A3/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/06/08/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E7%90%86%E8%A7%A3/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="什么是微服务"><a href="#什么是微服务" class="headerlink" title="什么是微服务"></a>什么是微服务</h1><p>微服务没有一个明确的定义,只能通过和传统的服务对比,才比较好理解什么是微服务.<br>传统服务是将绝大多数的业务 api 都集成在一个工程里.</p>
+<h2 id="优点是"><a href="#优点是" class="headerlink" title="优点是:"></a>优点是:</h2><ol>
+<li>开发简单直接，集中式管理</li>
+<li>基本不会重复开发</li>
+<li>功能都在本地，没有分布式的管理开销和调用开销</li>
+</ol>
+<h2 id="但是同样的-缺点也很多"><a href="#但是同样的-缺点也很多" class="headerlink" title="但是同样的,缺点也很多:"></a>但是同样的,缺点也很多:</h2><ol>
+<li>开发效率低：所有的开发在一个项目改代码，递交代码相互等待，代码冲突不断</li>
+<li>代码维护难：代码功能耦合在一起，新人不知道何从下手</li>
+<li>部署不灵活：构建时间长，任何小修改必须重新构建整个项目，这个过程往往很长</li>
+<li>稳定性不高：一个微不足道的小问题，可以导致整个应用挂掉</li>
+<li>扩展性不够：无法满足高并发情况下的业务需求</li>
+</ol>
+<p>所以对比之下就有了微服务架构.其思路大致上来说,就是将原来庞大的工程拆分成n 个小的,互相连接的工程.<br>比如原来是整个电商系统的后端服务,现在拆分成:</p>
+<ul>
+<li>用户服务</li>
+<li>商品服务</li>
+<li>订单服务</li>
+<li>物流服务</li>
+<li>等等…</li>
+</ul>
+<span id="more"></span>
+
+<p>不同的业务访问不同的服务,听起来似乎对前端很不友好,不同的业务我需要请求不同的服务器,其实不是的,在这些微服务之前,还有一个 api-gateway 来负责服务路由、负载均衡、缓存、访问控制和鉴权等任务,对前端来说整个架构就是透明的.</p>
+<h2 id="整体架构图大致上是这样"><a href="#整体架构图大致上是这样" class="headerlink" title="整体架构图大致上是这样"></a>整体架构图大致上是这样</h2><p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210608145148.png"></p>
+<h1 id="微服务有什么优点"><a href="#微服务有什么优点" class="headerlink" title="微服务有什么优点"></a>微服务有什么优点</h1><p>微服务架构有很多重要的优点。</p>
+<ol>
+<li><p>它解决了复杂性问题。它将单体应用分解为一组服务。虽然功能总量不变，但应用程序已被分解为可管理的模块或服务。这些服务定义了明确的RPC或消息驱动的API边界。微服务架构强化了应用模块化的水平，而这通过单体代码库很难实现。因此，微服务开发的速度要快很多，更容易理解和维护。</p>
+</li>
+<li><p>这种体系结构使得每个服务都可以由专注于此服务的团队独立开发。只要符合服务API契约，开发人员可以自由选择开发技术。这就意味着开发人员可以采用新技术编写或重构服务，由于服务相对较小，所以这并不会对整体应用造成太大影响。</p>
+</li>
+<li><p>微服务架构可以使每个微服务独立部署。开发人员无需协调对服务升级或更改的部署。这些更改可以在测试通过后立即部署。所以微服务架构也使得CI／CD成为可能。</p>
+</li>
+<li><p>微服务架构使得每个服务都可独立扩展。我们只需定义满足服务部署要求的配置、容量、实例数量等约束条件即可。比如我们可以在EC2计算优化实例上部署CPU密集型服务，在EC2内存优化实例上部署内存数据库服务。</p>
+</li>
+</ol>
+<h1 id="微服务有什么缺点"><a href="#微服务有什么缺点" class="headerlink" title="微服务有什么缺点"></a>微服务有什么缺点</h1><p>微服务的缺点主要是系统整体比较复杂,服务之间需要互相调用或者通信,并且对这些服务进行监控与管理.</p>
+<ol>
+<li>API Gateway</li>
+<li>服务间调用</li>
+<li>服务发现</li>
+<li>服务容错</li>
+<li>服务部署</li>
+<li>数据调用</li>
+</ol>
+<h1 id="所以我们需要一个工具来做弥补缺点"><a href="#所以我们需要一个工具来做弥补缺点" class="headerlink" title="所以我们需要一个工具来做弥补缺点"></a>所以我们需要一个工具来做弥补缺点</h1><p>微服务的缺点并不是无法解决的,我们可以使用一套工具或者框架来去管理我们的微服务.<br>比如使用:Service Mesh<br>现在 docker 的使用变得越来越成熟,而容器非常的切合微服务的理念.加上使用 K8S 做容器的管理,再使用其他工具做 Service Mesh. 整个系统都会变得有序且可控.</p>
+<p>系统结构<br><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210608160141.png"></p>
+<h1 id="Istio"><a href="#Istio" class="headerlink" title="Istio"></a>Istio</h1><p>Istio是一个用来连接、管理和保护微服务的开放平台。Istio提供一种简单的方式来建立已部署服务网络，具备负载均衡、服务间认证、监控等功能，而不需要改动任何服务代码。想要为服务增加对Istio的支持，您只需要在环境中部署一个特殊的边车（sidecar），使用Istio控制面板功能配置和管理代理，拦截微服务之间的所有网络通信。</p>
+<p>Istio提供了一个完整的解决方案，通过为整个服务网格提供行为洞察和操作控制来满足微服务应用程序的多样化需求。它在服务网络中统一提供了许多关键功能：</p>
+<ul>
+<li>流量管理：控制服务之间的流量和API调用的流向，使得调用更可靠，并使网络在恶劣情况下更加健壮。</li>
+<li>可观察性：了解服务之间的依赖关系，以及它们之间流量的本质和流向，从而提供快速识别问题的能力。</li>
+<li>策略执行：将组织策略应用于服务之间的互动，确保访问策略得以执行，资源在消费者之间良好分配。策略的更改是通过配置网格而不是修改应用程序代码。</li>
+<li>服务身份和安全：为网格中的服务提供可验证身份，并提供保护服务流量的能力，使其可以在不同可信度的网络上流转。</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a target="_blank" rel="noopener" href="http://dockone.io/article/3687">一篇文章快速理解微服务架构</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/24/TypeScript%20%E7%AC%94%E8%AE%B0/" rel="prev" title="TypeScript 学习笔记">
+      <i class="fa fa-chevron-left"></i> TypeScript 学习笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/15/libuv%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="next" title="libuv 学习笔记">
+      libuv 学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AE%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.</span> <span class="nav-text">什么是微服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E7%82%B9%E6%98%AF"><span class="nav-number">1.1.</span> <span class="nav-text">优点是:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%86%E6%98%AF%E5%90%8C%E6%A0%B7%E7%9A%84-%E7%BC%BA%E7%82%B9%E4%B9%9F%E5%BE%88%E5%A4%9A"><span class="nav-number">1.2.</span> <span class="nav-text">但是同样的,缺点也很多:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84%E5%9B%BE%E5%A4%A7%E8%87%B4%E4%B8%8A%E6%98%AF%E8%BF%99%E6%A0%B7"><span class="nav-number">1.3.</span> <span class="nav-text">整体架构图大致上是这样</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9C%89%E4%BB%80%E4%B9%88%E4%BC%98%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">微服务有什么优点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9C%89%E4%BB%80%E4%B9%88%E7%BC%BA%E7%82%B9"><span class="nav-number">3.</span> <span class="nav-text">微服务有什么缺点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%80%E4%BB%A5%E6%88%91%E4%BB%AC%E9%9C%80%E8%A6%81%E4%B8%80%E4%B8%AA%E5%B7%A5%E5%85%B7%E6%9D%A5%E5%81%9A%E5%BC%A5%E8%A1%A5%E7%BC%BA%E7%82%B9"><span class="nav-number">4.</span> <span class="nav-text">所以我们需要一个工具来做弥补缺点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Istio"><span class="nav-number">5.</span> <span class="nav-text">Istio</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

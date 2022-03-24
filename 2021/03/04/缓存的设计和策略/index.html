@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="缓存的设计数据库的性能相比而言比较差,当用户量上来以后就不能直接读数据库,否则会导致连接数超过数据库连接串数,出现大量的慢请求,而且大量的数据其实并不会频繁的更新数据,这个时候就可以使用缓存来优化速度.比如使用redis,redis的读写速度要快于MongoDB,使用redis不仅可以减少MongoDB压力,也可以加快接口响应速度.用户先请求redis,如果有数据就直接返回,不再查询数据库,如果r">
+<meta property="og:type" content="article">
+<meta property="og:title" content="缓存的设计">
+<meta property="og:url" content="http://hwl.me/2021/03/04/%E7%BC%93%E5%AD%98%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%92%8C%E7%AD%96%E7%95%A5/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="缓存的设计数据库的性能相比而言比较差,当用户量上来以后就不能直接读数据库,否则会导致连接数超过数据库连接串数,出现大量的慢请求,而且大量的数据其实并不会频繁的更新数据,这个时候就可以使用缓存来优化速度.比如使用redis,redis的读写速度要快于MongoDB,使用redis不仅可以减少MongoDB压力,也可以加快接口响应速度.用户先请求redis,如果有数据就直接返回,不再查询数据库,如果r">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304135321.png">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304140614.png">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304141436.png">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304143325.png">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304110809.png">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304144412.png">
+<meta property="article:published_time" content="2021-03-04T03:04:57.000Z">
+<meta property="article:modified_time" content="2021-03-04T06:45:46.000Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304135321.png">
+
+<link rel="canonical" href="http://hwl.me/2021/03/04/%E7%BC%93%E5%AD%98%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%92%8C%E7%AD%96%E7%95%A5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>缓存的设计 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2021/03/04/%E7%BC%93%E5%AD%98%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%92%8C%E7%AD%96%E7%95%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          缓存的设计
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-04 11:04:57 / 修改时间：14:45:46" itemprop="dateCreated datePublished" datetime="2021-03-04T11:04:57+08:00">2021-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/03/04/%E7%BC%93%E5%AD%98%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%92%8C%E7%AD%96%E7%95%A5/" class="post-meta-item leancloud_visitors" data-flag-title="缓存的设计" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/03/04/%E7%BC%93%E5%AD%98%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%92%8C%E7%AD%96%E7%95%A5/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/04/%E7%BC%93%E5%AD%98%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%92%8C%E7%AD%96%E7%95%A5/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="缓存的设计"><a href="#缓存的设计" class="headerlink" title="缓存的设计"></a>缓存的设计</h1><p>数据库的性能相比而言比较差,当用户量上来以后就不能直接读数据库,否则会导致连接数超过数据库连接串数,出现大量的慢请求,而且大量的数据其实并不会频繁的更新数据,这个时候就可以使用缓存来优化速度.比如使用redis,redis的读写速度要快于MongoDB,使用redis不仅可以减少MongoDB压力,也可以加快接口响应速度.<br>用户先请求redis,如果有数据就直接返回,不再查询数据库,如果redis中没有再查询数据库</p>
+<h2 id="缓存的读写策略"><a href="#缓存的读写策略" class="headerlink" title="缓存的读写策略"></a>缓存的读写策略</h2><p>redis和MongoDB中都有一份数据,那如果两端的数据不一致怎么办呢?</p>
+<h3 id="Cache-Aside-策略"><a href="#Cache-Aside-策略" class="headerlink" title="Cache Aside 策略"></a>Cache Aside 策略</h3><p>如果先更新数据库后更新缓存,会出现什么问题呢?<br>在2个并发写请求时可能就会出现问题</p>
+<span id="more"></span>
+<p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304135321.png"><br>因为变更数据库和变更缓存是两个独立的操作，而我们并没有对操作做任何的并发控制。那么当两个线程并发更新它们的时候，就会因为写入顺序的不同造成数据的不一致。</p>
+<blockquote>
+<p>这个时候我们可以使用缓存最常见的策略，Cache Aside 策略（也叫旁路缓存策略），这个策略数据以数据库中的数据为准，缓存中的数据是按需加载的。</p>
+</blockquote>
+<h4 id="它可以分为读策略和写策略，其中读策略的步骤是："><a href="#它可以分为读策略和写策略，其中读策略的步骤是：" class="headerlink" title="它可以分为读策略和写策略，其中读策略的步骤是："></a>它可以分为读策略和写策略，其中读策略的步骤是：</h4><ol>
+<li>从缓存中读取数据；</li>
+<li>如果缓存命中，则直接返回数据；</li>
+<li>如果缓存不命中，则从数据库中查询数据；</li>
+<li>查询到数据后，将数据写入到缓存中，并且返回给用户。</li>
+</ol>
+<h4 id="写策略的步骤是："><a href="#写策略的步骤是：" class="headerlink" title="写策略的步骤是："></a>写策略的步骤是：</h4><ol>
+<li>更新数据库中的记录；</li>
+<li>删除缓存记录。</li>
+</ol>
+<h4 id="但是Cache-Aside-存在的最大的问题是当写入比较频繁时，缓存中的数据会被频繁地清理，这样会对缓存的命中率有一些影响。"><a href="#但是Cache-Aside-存在的最大的问题是当写入比较频繁时，缓存中的数据会被频繁地清理，这样会对缓存的命中率有一些影响。" class="headerlink" title="但是Cache Aside 存在的最大的问题是当写入比较频繁时，缓存中的数据会被频繁地清理，这样会对缓存的命中率有一些影响。"></a>但是Cache Aside 存在的最大的问题是当写入比较频繁时，缓存中的数据会被频繁地清理，这样会对缓存的命中率有一些影响。</h4><p>如果你的业务对缓存命中率有严格的要求，那么可以考虑两种解决方案：</p>
+<ol>
+<li>一种做法是在更新数据时也更新缓存，只是在更新缓存前先加一个分布式锁，因为这样在同一时间只允许一个线程更新缓存，就不会产生并发问题了。当然这么做对于写入的性能会有一些影响；</li>
+<li>另一种做法同样也是在更新数据时更新缓存，只是给缓存加一个较短的过期时间，这样即使出现缓存不一致的情况，缓存的数据也会很快过期，对业务的影响也是可以接受。</li>
+</ol>
+<h3 id="Read-x2F-Write-Through（读穿-x2F-写穿）策略"><a href="#Read-x2F-Write-Through（读穿-x2F-写穿）策略" class="headerlink" title="Read&#x2F;Write Through（读穿 &#x2F; 写穿）策略"></a>Read&#x2F;Write Through（读穿 &#x2F; 写穿）策略</h3><blockquote>
+<p>这个策略的核心原则是用户只与缓存打交道，由缓存和数据库通信，写入或者读取数据。这就好比你在汇报工作的时候只对你的直接上级汇报，再由你的直接上级汇报给他的上级，你是不能越级汇报的。</p>
+</blockquote>
+<p>Write Through 的策略是这样的：先查询要写入的数据在缓存中是否已经存在，如果已经存在，则更新缓存中的数据，并且由缓存组件同步更新到数据库中，如果缓存中数据不存在，我们把这种情况叫做“Write Miss（写失效）”。</p>
+<p>一般来说，我们可以选择两种“Write Miss”方式：一个是“Write Allocate（按写分配）”，做法是写入缓存相应位置，再由缓存组件同步更新到数据库中；另一个是“No-write allocate（不按写分配）”，做法是不写入缓存中，而是直接更新到数据库中。</p>
+<p>这个策略需要有可靠性很强的组件去实现缓存到数据库同步这一步,可以将更新操作以命令的形式发送到消息队列中,让消费者去做数据库更新</p>
+<p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304140614.png"></p>
+<h3 id="Write-Back（写回）"><a href="#Write-Back（写回）" class="headerlink" title="Write Back（写回）"></a>Write Back（写回）</h3><blockquote>
+<p>策略这个策略的核心思想是在写入数据时只写入缓存，并且把缓存块儿标记为“脏”的。而脏块儿只有被再次使用时才会将其中的数据写入到后端存储中。不推荐使用.</p>
+</blockquote>
+<p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304141436.png"></p>
+<h2 id="缓存如何做到高可用"><a href="#缓存如何做到高可用" class="headerlink" title="缓存如何做到高可用"></a>缓存如何做到高可用</h2><h3 id="hash环"><a href="#hash环" class="headerlink" title="hash环"></a>hash环</h3><h3 id="主从部署"><a href="#主从部署" class="headerlink" title="主从部署"></a>主从部署</h3><h2 id="缓存的穿透-雪崩-击穿以及如何处理"><a href="#缓存的穿透-雪崩-击穿以及如何处理" class="headerlink" title="缓存的穿透,雪崩,击穿以及如何处理"></a>缓存的穿透,雪崩,击穿以及如何处理</h2><h3 id="穿透"><a href="#穿透" class="headerlink" title="穿透"></a>穿透</h3><blockquote>
+<p>缓存穿透其实是指从缓存中没有查到数据，而不得不从后端系统（比如数据库）中查询的情况。</p>
+</blockquote>
+<p>不过少量的缓存穿透不可避免，对系统也是没有损害的，主要有几点原因:</p>
+<ul>
+<li>一方面，互联网系统通常会面临极大数据量的考验，而缓存系统在容量上是有限的，不可能存储系统所有的数据，那么在查询未缓存数据的时候就会发生缓存穿透。</li>
+<li>另一方面，互联网系统的数据访问模型一般会遵从“80&#x2F;20 原则”。“80&#x2F;20 原则”又称为帕累托法则，是意大利经济学家帕累托提出的一个经济学的理论。简单来说，它是指在一组事物中，最重要的部分通常只占 20%，而其他的 80% 并没有那么重要。把它应用到数据访问的领域，就是我们会经常访问 20% 的热点数据，而另外的 80% 的数据则不会被经常访问。比如你买了很多衣服，很多书，但是其实经常穿的、经常看的可能也就是其中很小的一部分。</li>
+</ul>
+<p>但是如果要读取一个用户表中未注册的用户，会发生什么情况呢？我们会先读缓存再穿透读数据库。由于用户并不存在，所以缓存和数据库中都没有查询到数据，因此也就不会向缓存中回种数据（也就是向缓存中设置值的意思），<strong>这样当再次请求这个用户数据的时候还是会再次穿透到数据库</strong>。在这种场景下缓存并不能有效地阻挡请求穿透到数据库上，它的作用就微乎其微了。那如何解决缓存穿透呢？一般来说我们会有两种解决方案：回种空值以及使用布隆过滤器。</p>
+<h4 id="回种空值"><a href="#回种空值" class="headerlink" title="回种空值"></a>回种空值</h4><p>回顾上面提到的场景，你会发现最大的问题在于数据库中并不存在用户的数据，这就造成无论查询多少次数据库中永远都不会存在这个用户的数据，穿透永远都会发生。<br>类似的场景还有一些：比如由于代码的 bug 导致查询数据库的时候抛出了异常，这样可以认为从数据库查询出来的数据为空，同样不会回种缓存。</p>
+<p>那么，当我们从数据库中查询到空值或者发生异常时，<strong>我们可以向缓存中回种一个空值</strong>。但是因为空值并不是准确的业务数据，并且会占用缓存的空间，所以我们会给这个空值加一个比较短的过期时间，让空值在短时间之内能够快速过期淘汰。这样空值存在的期间,就不会穿透到数据库层了.</p>
+<p>回种空值虽然能够阻挡大量穿透的请求，但如果有大量获取未注册用户信息的请求，<strong>缓存内就会有有大量的空值缓存，也就会浪费缓存的存储空间</strong>，如果缓存空间被占满了，还会剔除掉一些已经被缓存的用户信息反而会造成缓存命中率的下降。所以这个方案，我建议你在使用的时候应该评估一下缓存容量是否能够支撑。如果需要大量的缓存节点来支持，那么就无法通过通过回种空值的方式来解决，这时你可以考虑使用布隆过滤器。</p>
+<h4 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h4><p>原理:我们把集合中的每一个值按照提供的 Hash 算法算出对应的 Hash 值，然后将 Hash 值对数组长度取模后得到需要计入数组的索引值，并且将数组这个位置的值从 0 改成 1。在判断一个元素是否存在于这个集合中时，你只需要将这个元素按照相同的算法计算出索引值，如果这个位置的值为 1 就认为这个元素在集合中，否则则认为不在集合中。<br><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304143325.png"></p>
+<p>那么我们如何使用布隆过滤器来解决缓存穿透的问题呢？还是以存储用户信息的表为例进行讲解。首先我们初始化一个很大的数组，比方说长度为 20 亿的数组，接下来我们选择一个 Hash 算法，然后我们将目前现有的所有用户的 ID 计算出 Hash 值并且映射到这个大数组中，映射位置的值设置为 1，其它值设置为 0。<br><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304110809.png"></p>
+<p>布隆过滤器拥有极高的性能，无论是写入操作还是读取操作，时间复杂度都是 O(1) 是常量值。在空间上，相对于其他数据结构它也有很大的优势，比如，20 亿的数组需要 2000000000&#x2F;8&#x2F;1024&#x2F;1024 &#x3D; 238M 的空间，而如果使用数组来存储，假设每个用户 ID 占用 4 个字节的空间，那么存储 20 亿用户需要 2000000000 * 4 &#x2F; 1024 &#x2F; 1024 &#x3D; 7600M 的空间，是布隆过滤器的 32 倍。</p>
+<h5 id="布隆过滤器的误判有一个特点，就是它只会出现“false-positive”的情况。这是什么意思呢？当布隆过滤器判断元素在集合中时，这个元素可能不在集合中。但是一旦布隆过滤器判断这个元素不在集合中时，它一定不在集合中。这一点非常适合解决缓存穿透的问题。"><a href="#布隆过滤器的误判有一个特点，就是它只会出现“false-positive”的情况。这是什么意思呢？当布隆过滤器判断元素在集合中时，这个元素可能不在集合中。但是一旦布隆过滤器判断这个元素不在集合中时，它一定不在集合中。这一点非常适合解决缓存穿透的问题。" class="headerlink" title="布隆过滤器的误判有一个特点，就是它只会出现“false positive”的情况。这是什么意思呢？当布隆过滤器判断元素在集合中时，这个元素可能不在集合中。但是一旦布隆过滤器判断这个元素不在集合中时，它一定不在集合中。这一点非常适合解决缓存穿透的问题。"></a>布隆过滤器的误判有一个特点，就是它只会出现“false positive”的情况。这是什么意思呢？当布隆过滤器判断元素在集合中时，这个元素可能不在集合中。但是一旦布隆过滤器判断这个元素不在集合中时，它一定不在集合中。这一点非常适合解决缓存穿透的问题。</h5><h5 id="不过任何事物都有两面性，布隆过滤器也不例外"><a href="#不过任何事物都有两面性，布隆过滤器也不例外" class="headerlink" title="不过任何事物都有两面性，布隆过滤器也不例外"></a>不过任何事物都有两面性，布隆过滤器也不例外</h5><p>它主要有两个缺陷：</p>
+<ol>
+<li>它在判断元素是否在集合中时是有一定错误几率的，比如它会把不是集合中的元素判断为处在集合中；这是由于hash算法的碰撞造成的.</li>
+<li>不支持删除元素。</li>
+</ol>
+<p>关于布隆过滤器的使用上，有几个建议：</p>
+<ol>
+<li>选择多个 Hash 函数计算多个 Hash 值，这样可以减少误判的几率；</li>
+<li>布隆过滤器会消耗一定的内存空间，所以在使用时需要评估你的业务场景下需要多大的内存，存储的成本是否可以接受。</li>
+</ol>
+<h3 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h3><blockquote>
+<p>缓存击穿是指缓存中没有但数据库中有的数据（一般是缓存时间到期），这时由于<strong>并发用户特别多</strong>，同时读缓存没读到数据，又同时去数据库去取数据，引起数据库压力瞬间增大，造成过大压力</p>
+</blockquote>
+<p><strong>解决方案：</strong></p>
+<ol>
+<li>设置热点数据永远不过期。</li>
+<li>加互斥锁<br>使用这2个方案都有一定的风险,第一种方案会造成内存的使用量大大增加;第二种在回写缓存的期间其他用户都会无法获取数据,而且也要小心死锁的问题.所以如果不是必要性的数据,尽量不要使用这种方案.</li>
+</ol>
+<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><blockquote>
+<p>缓存雪崩是指缓存中数据大批量到过期时间，而查询数据量巨大，引起数据库压力过大甚至down机。和缓存击穿不同的是,缓存击穿指并发查同一条数据，缓存雪崩是不同数据都过期了，很多数据都查不到从而查数据库。</p>
+</blockquote>
+<p>解决方案：</p>
+<ol>
+<li>缓存数据的过期时间设置随机，防止同一时间大量数据过期现象发生。</li>
+<li>如果缓存数据库是分布式部署，将热点数据均匀分布在不同搞得缓存数据库中。</li>
+<li>设置热点数据永远不过期。</li>
+</ol>
+<h2 id="缓存穿透总结"><a href="#缓存穿透总结" class="headerlink" title="缓存穿透总结"></a>缓存穿透总结</h2><p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me20210304144412.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/08/MongoDB%20TTL%E7%B4%A2%E5%BC%95%E5%AE%9E%E6%88%98/" rel="prev" title="MongoDB TTL索引实战">
+      <i class="fa fa-chevron-left"></i> MongoDB TTL索引实战
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/04/%E9%99%90%E6%B5%81%E7%AE%97%E6%B3%95/" rel="next" title="限流算法">
+      限流算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.</span> <span class="nav-text">缓存的设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%9A%84%E8%AF%BB%E5%86%99%E7%AD%96%E7%95%A5"><span class="nav-number">1.1.</span> <span class="nav-text">缓存的读写策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache-Aside-%E7%AD%96%E7%95%A5"><span class="nav-number">1.1.1.</span> <span class="nav-text">Cache Aside 策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%83%E5%8F%AF%E4%BB%A5%E5%88%86%E4%B8%BA%E8%AF%BB%E7%AD%96%E7%95%A5%E5%92%8C%E5%86%99%E7%AD%96%E7%95%A5%EF%BC%8C%E5%85%B6%E4%B8%AD%E8%AF%BB%E7%AD%96%E7%95%A5%E7%9A%84%E6%AD%A5%E9%AA%A4%E6%98%AF%EF%BC%9A"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">它可以分为读策略和写策略，其中读策略的步骤是：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99%E7%AD%96%E7%95%A5%E7%9A%84%E6%AD%A5%E9%AA%A4%E6%98%AF%EF%BC%9A"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">写策略的步骤是：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%86%E6%98%AFCache-Aside-%E5%AD%98%E5%9C%A8%E7%9A%84%E6%9C%80%E5%A4%A7%E7%9A%84%E9%97%AE%E9%A2%98%E6%98%AF%E5%BD%93%E5%86%99%E5%85%A5%E6%AF%94%E8%BE%83%E9%A2%91%E7%B9%81%E6%97%B6%EF%BC%8C%E7%BC%93%E5%AD%98%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E4%BC%9A%E8%A2%AB%E9%A2%91%E7%B9%81%E5%9C%B0%E6%B8%85%E7%90%86%EF%BC%8C%E8%BF%99%E6%A0%B7%E4%BC%9A%E5%AF%B9%E7%BC%93%E5%AD%98%E7%9A%84%E5%91%BD%E4%B8%AD%E7%8E%87%E6%9C%89%E4%B8%80%E4%BA%9B%E5%BD%B1%E5%93%8D%E3%80%82"><span class="nav-number">1.1.1.3.</span> <span class="nav-text">但是Cache Aside 存在的最大的问题是当写入比较频繁时，缓存中的数据会被频繁地清理，这样会对缓存的命中率有一些影响。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Read-x2F-Write-Through%EF%BC%88%E8%AF%BB%E7%A9%BF-x2F-%E5%86%99%E7%A9%BF%EF%BC%89%E7%AD%96%E7%95%A5"><span class="nav-number">1.1.2.</span> <span class="nav-text">Read&#x2F;Write Through（读穿 &#x2F; 写穿）策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Write-Back%EF%BC%88%E5%86%99%E5%9B%9E%EF%BC%89"><span class="nav-number">1.1.3.</span> <span class="nav-text">Write Back（写回）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%A6%82%E4%BD%95%E5%81%9A%E5%88%B0%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">缓存如何做到高可用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#hash%E7%8E%AF"><span class="nav-number">1.2.1.</span> <span class="nav-text">hash环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E9%83%A8%E7%BD%B2"><span class="nav-number">1.2.2.</span> <span class="nav-text">主从部署</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%9A%84%E7%A9%BF%E9%80%8F-%E9%9B%AA%E5%B4%A9-%E5%87%BB%E7%A9%BF%E4%BB%A5%E5%8F%8A%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">缓存的穿透,雪崩,击穿以及如何处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BF%E9%80%8F"><span class="nav-number">1.3.1.</span> <span class="nav-text">穿透</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%9E%E7%A7%8D%E7%A9%BA%E5%80%BC"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">回种空值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-number">1.3.1.2.</span> <span class="nav-text">布隆过滤器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%E7%9A%84%E8%AF%AF%E5%88%A4%E6%9C%89%E4%B8%80%E4%B8%AA%E7%89%B9%E7%82%B9%EF%BC%8C%E5%B0%B1%E6%98%AF%E5%AE%83%E5%8F%AA%E4%BC%9A%E5%87%BA%E7%8E%B0%E2%80%9Cfalse-positive%E2%80%9D%E7%9A%84%E6%83%85%E5%86%B5%E3%80%82%E8%BF%99%E6%98%AF%E4%BB%80%E4%B9%88%E6%84%8F%E6%80%9D%E5%91%A2%EF%BC%9F%E5%BD%93%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%E5%88%A4%E6%96%AD%E5%85%83%E7%B4%A0%E5%9C%A8%E9%9B%86%E5%90%88%E4%B8%AD%E6%97%B6%EF%BC%8C%E8%BF%99%E4%B8%AA%E5%85%83%E7%B4%A0%E5%8F%AF%E8%83%BD%E4%B8%8D%E5%9C%A8%E9%9B%86%E5%90%88%E4%B8%AD%E3%80%82%E4%BD%86%E6%98%AF%E4%B8%80%E6%97%A6%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%E5%88%A4%E6%96%AD%E8%BF%99%E4%B8%AA%E5%85%83%E7%B4%A0%E4%B8%8D%E5%9C%A8%E9%9B%86%E5%90%88%E4%B8%AD%E6%97%B6%EF%BC%8C%E5%AE%83%E4%B8%80%E5%AE%9A%E4%B8%8D%E5%9C%A8%E9%9B%86%E5%90%88%E4%B8%AD%E3%80%82%E8%BF%99%E4%B8%80%E7%82%B9%E9%9D%9E%E5%B8%B8%E9%80%82%E5%90%88%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E7%9A%84%E9%97%AE%E9%A2%98%E3%80%82"><span class="nav-number">1.3.1.2.1.</span> <span class="nav-text">布隆过滤器的误判有一个特点，就是它只会出现“false positive”的情况。这是什么意思呢？当布隆过滤器判断元素在集合中时，这个元素可能不在集合中。但是一旦布隆过滤器判断这个元素不在集合中时，它一定不在集合中。这一点非常适合解决缓存穿透的问题。</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%8D%E8%BF%87%E4%BB%BB%E4%BD%95%E4%BA%8B%E7%89%A9%E9%83%BD%E6%9C%89%E4%B8%A4%E9%9D%A2%E6%80%A7%EF%BC%8C%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%E4%B9%9F%E4%B8%8D%E4%BE%8B%E5%A4%96"><span class="nav-number">1.3.1.2.2.</span> <span class="nav-text">不过任何事物都有两面性，布隆过滤器也不例外</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-number">1.3.2.</span> <span class="nav-text">缓存击穿</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">1.3.3.</span> <span class="nav-text">缓存雪崩</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F%E6%80%BB%E7%BB%93"><span class="nav-number">1.4.</span> <span class="nav-text">缓存穿透总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

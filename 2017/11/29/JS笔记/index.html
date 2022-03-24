@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="扩展运算符扩展运算符就是... 不懂的情况下阅读难度笔记大,学会了以后非常好用扩展运算符主要有两个作用  将一个数组转为用逗号分隔的参数序列 表示剩下的所有参数,并且合并成一个数组.  第一种情况主要是用来合并数组的 12345678910111213141516&#x2F;&#x2F;ES5[1, 2].concat(more)&#x2F;&#x2F; ES6[1, 2, ...more]var arr1 &#x3D; [&amp;#x27;a&amp;#x2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS初学笔记">
+<meta property="og:url" content="http://hwl.me/2017/11/29/JS%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="扩展运算符扩展运算符就是... 不懂的情况下阅读难度笔记大,学会了以后非常好用扩展运算符主要有两个作用  将一个数组转为用逗号分隔的参数序列 表示剩下的所有参数,并且合并成一个数组.  第一种情况主要是用来合并数组的 12345678910111213141516&#x2F;&#x2F;ES5[1, 2].concat(more)&#x2F;&#x2F; ES6[1, 2, ...more]var arr1 &#x3D; [&amp;#x27;a&amp;#x2">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-11-29T08:21:39.000Z">
+<meta property="article:modified_time" content="2017-11-29T10:28:55.000Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hwl.me/2017/11/29/JS%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JS初学笔记 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2017/11/29/JS%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JS初学笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2017-11-29 16:21:39 / 修改时间：18:28:55" itemprop="dateCreated datePublished" datetime="2017-11-29T16:21:39+08:00">2017-11-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2017/11/29/JS%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="JS初学笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2017/11/29/JS%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2017/11/29/JS%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="扩展运算符"><a href="#扩展运算符" class="headerlink" title="扩展运算符"></a>扩展运算符</h2><p>扩展运算符就是<code>...</code> 不懂的情况下阅读难度笔记大,学会了以后非常好用<br>扩展运算符主要有两个作用</p>
+<ol>
+<li>将一个数组转为用逗号分隔的参数序列</li>
+<li>表示剩下的所有参数,并且合并成一个数组.</li>
+</ol>
+<p>第一种情况主要是用来合并数组的</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ES5</span></span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>].<span class="title function_">concat</span>(more)</span><br><span class="line"><span class="comment">// ES6</span></span><br><span class="line">[<span class="number">1</span>, <span class="number">2</span>, ...more]</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> arr1 = [<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> arr2 = [<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="keyword">var</span> arr3 = [<span class="string">&#x27;d&#x27;</span>, <span class="string">&#x27;e&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// ES5的合并数组</span></span><br><span class="line">arr1.<span class="title function_">concat</span>(arr2, arr3);</span><br><span class="line"><span class="comment">// [ &#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;, &#x27;d&#x27;, &#x27;e&#x27; ]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ES6的合并数组</span></span><br><span class="line">[...arr1, ...arr2, ...arr3]</span><br><span class="line"><span class="comment">// [ &#x27;a&#x27;, &#x27;b&#x27;, &#x27;c&#x27;, &#x27;d&#x27;, &#x27;e&#x27; ]</span></span><br></pre></td></tr></table></figure>
+<span id="more"></span>
+<p>第二种情况主要是用来赋值的</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> [first, ...rest] = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];</span><br><span class="line">first <span class="comment">// 1</span></span><br><span class="line">rest  <span class="comment">// [2, 3, 4, 5]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> [first, ...rest] = [];</span><br><span class="line">first <span class="comment">// undefined</span></span><br><span class="line">rest  <span class="comment">// []:</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> [first, ...rest] = [<span class="string">&quot;foo&quot;</span>];</span><br><span class="line">first  <span class="comment">// &quot;foo&quot;</span></span><br><span class="line">rest   <span class="comment">// []</span></span><br><span class="line"><span class="comment">// 要注意的是...rest这样的写法只能放在最后,如果作为第一个参数,就没有意义了</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="x3D-gt-箭头函数"><a href="#x3D-gt-箭头函数" class="headerlink" title="&#x3D;&gt;箭头函数"></a>&#x3D;&gt;箭头函数</h2><h3 id="简单的说就是把function-参数1-参数2-化简了-参数1-参数2-x3D-gt"><a href="#简单的说就是把function-参数1-参数2-化简了-参数1-参数2-x3D-gt" class="headerlink" title="简单的说就是把function(参数1,参数2){}化简了 (参数1,参数2) &#x3D;&gt;{}"></a>简单的说就是把function(参数1,参数2){}化简了 (参数1,参数2) &#x3D;&gt;{}</h3><p>这样不仅看起来直接的多,而且写起来也方便,因为JS中很多回调函数都是匿名的,并不需要那么完整的格式.<br><strong>但是,这当然不仅仅只是一个语法糖,在&#x3D;&gt;函数里,this的作用域会变,这里的this指向的是定义他的那个对象,而不是当前的对象.所以在使用的时候要注意,并且别什么情况下都使用&#x3D;&gt;函数</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 正常函数写法</span></span><br><span class="line">[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].<span class="title function_">map</span>(<span class="keyword">function</span> (<span class="params">x</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> x * x;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 箭头函数写法</span></span><br><span class="line">[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>].<span class="title function_">map</span>(<span class="function"><span class="params">x</span> =&gt;</span> x * x)</span><br><span class="line"><span class="comment">//当只有一个参数时不需要括号也可以</span></span><br></pre></td></tr></table></figure>
+
+<p>最后的升级版就是把扩展运算符和箭头函数合并在一起使用</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">numbers</span> = (<span class="params">...nums</span>) =&gt; nums;</span><br><span class="line"></span><br><span class="line"><span class="title function_">numbers</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</span><br><span class="line"><span class="comment">// [1,2,3,4,5]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="title function_">headAndTail</span> = (<span class="params">head, ...tail</span>) =&gt; [head, tail];</span><br><span class="line"></span><br><span class="line"><span class="title function_">headAndTail</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</span><br><span class="line"><span class="comment">// [1,[2,3,4,5]]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="还要注意一点-x3D-gt-函数不能使用yield命令-所以不能用作Generator函数-也不可以当做构造函数-即不可使用new命令-总结-x3D-gt-函数就是用在回调函数等比较简单的匿名函数里-方便写-方便看"><a href="#还要注意一点-x3D-gt-函数不能使用yield命令-所以不能用作Generator函数-也不可以当做构造函数-即不可使用new命令-总结-x3D-gt-函数就是用在回调函数等比较简单的匿名函数里-方便写-方便看" class="headerlink" title="还要注意一点&#x3D;&gt;函数不能使用yield命令,所以不能用作Generator函数,也不可以当做构造函数,即不可使用new命令.总结,&#x3D;&gt;函数就是用在回调函数等比较简单的匿名函数里,方便写,方便看."></a>还要注意一点&#x3D;&gt;函数不能使用yield命令,所以不能用作Generator函数,也不可以当做构造函数,即不可使用new命令.总结,&#x3D;&gt;函数就是用在回调函数等比较简单的匿名函数里,方便写,方便看.</h3><h2 id="变量的解构赋值"><a href="#变量的解构赋值" class="headerlink" title="变量的解构赋值"></a>变量的解构赋值</h2><p>es6变量的赋值比较方便,比如<br><code> let [a,b,c] = [1,2,3];</code><br>对于数组的赋值,就是要位置对,结构对就可以赋值了.比如<br><code> let [foo, [[bar],baz] = [1,[[2],3]];</code><br>如果位置或者结构对不上,那数组的赋值是不行的,报undefined</p>
+<p>另一种情况,是对象的解构赋值,对象的更方便,只要名字对的上就好了<br><code> let&#123;foo, bar&#125; = &#123;foo:’123’,bar:’321’&#125;</code><br>其实顺序位置对不上也是可以的,只要名字一样就好了,这就带来的异常的方便.</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用:"></a>使用:</h3><p><code>[x,y] = [y,x]</code>直接就交换x和y的值了<br>比如后端返回给前端一个对象obj,前端不用一个个的赋值<code>let a = obj.a,b = obj.b</code>这样麻烦死,用解构赋值以后只要 <code>let&#123;a,b&#125; = obj;</code>前端或者说只要对方只要你的变量叫什么名字,就可以从你封装好的对象里,得到这个值,非常快速方便的赋值.之前看到的<code>const React,&#123;PropTypes&#125; from ‘react’</code>也是一样的道理,这里的<code>&#123;PropTypes&#125;</code>就是react的一个属性可以写成是react.PropTyes</p>
+<h2 id="map"><a href="#map" class="headerlink" title="map"></a>map</h2><p>map有两种用法 </p>
+<ol>
+<li>数组对象的一个遍历方法</li>
+<li>一种数据结构<h3 id="当做遍历时-简单的说就是把数组当前的每一个值-依次的传到参数-中例如"><a href="#当做遍历时-简单的说就是把数组当前的每一个值-依次的传到参数-中例如" class="headerlink" title="当做遍历时,简单的说就是把数组当前的每一个值,依次的传到参数()中例如"></a>当做遍历时,简单的说就是把数组当前的每一个值,依次的传到参数()中例如</h3></li>
+</ol>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> nub = [<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>];</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">sqrt</span>(<span class="params">n</span>)&#123;</span><br><span class="line">	<span class="keyword">return</span> n*n;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> sqrt = nub.<span class="title function_">map</span>(sqrt) <span class="comment">// 4,9,16,25</span></span><br></pre></td></tr></table></figure>
+
+<p>所以这第一种情况大多是函数遍历一个数组,只不过写法主动被动上有点不同</p>
+<h3 id="这第二种情况呢-map是一个Object的变形"><a href="#这第二种情况呢-map是一个Object的变形" class="headerlink" title="这第二种情况呢,map是一个Object的变形"></a>这第二种情况呢,map是一个Object的变形</h3><p>他比object多的就是他的key不仅仅可以是string,可以是各种类型的值,甚至还包括对象,所以在hash结构上,map是一种比object很好的数据结构</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//true作为键</span></span><br><span class="line"><span class="keyword">var</span> m = <span class="keyword">new</span> <span class="title class_">Map</span>([</span><br><span class="line">  [<span class="literal">true</span>, ‘foo’],</span><br><span class="line">  [‘<span class="literal">true</span>’, ‘bar’]</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line">m.<span class="title function_">get</span>(<span class="literal">true</span>) <span class="comment">// ‘foo’</span></span><br><span class="line">m.<span class="title function_">get</span>(‘<span class="literal">true</span>’) <span class="comment">// ‘bar’</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> map = <span class="keyword">new</span> <span class="title class_">Map</span>([</span><br><span class="line">  [‘name’, ‘张三’],</span><br><span class="line">  [‘title’, ‘<span class="title class_">Author</span>’]</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line">map.<span class="property">size</span> <span class="comment">// 2</span></span><br><span class="line">map.<span class="title function_">has</span>(‘name’) <span class="comment">// true</span></span><br><span class="line">map.<span class="title function_">get</span>(‘name’) <span class="comment">// “张三”</span></span><br><span class="line">map.<span class="title function_">has</span>(‘title’) <span class="comment">// true</span></span><br><span class="line">map.<span class="title function_">get</span>(‘title’) <span class="comment">// “Author”</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> items = [</span><br><span class="line">  [‘name’, ‘张三’],</span><br><span class="line">  [‘title’, ‘<span class="title class_">Author</span>’]</span><br><span class="line">];</span><br><span class="line"><span class="keyword">var</span> map = <span class="keyword">new</span> <span class="title class_">Map</span>();</span><br><span class="line">items.<span class="title function_">forEach</span>(<span class="function">(<span class="params">[key, value]</span>) =&gt;</span> map.<span class="title function_">set</span>(key, value));</span><br></pre></td></tr></table></figure>
+
+<p>Map这个对象还内置了5个方法和一个属性,</p>
+<ul>
+<li>get(key)</li>
+<li>set(key)</li>
+<li>has(key)</li>
+<li>delete(key)</li>
+<li>clear()</li>
+<li>size(属性)<br>还带了4个遍历器</li>
+<li>keys()：返回键名的遍历器。</li>
+<li>values()：返回键值的遍历器。</li>
+<li>entries()：返回所有成员的遍历器。</li>
+<li>forEach()：遍历Map的所有成员。</li>
+</ul>
+<h2 id="这里顺便讲一下数组的遍历方法-forEach-map-reduce-filter"><a href="#这里顺便讲一下数组的遍历方法-forEach-map-reduce-filter" class="headerlink" title="这里顺便讲一下数组的遍历方法 forEach,map, reduce, filter"></a>这里顺便讲一下数组的遍历方法 forEach,map, reduce, filter</h2><p>假设我们有一个数组，每个元素是一个人。你面前站了一排人。</p>
+<h3 id="foreach-就是你按顺序一个一个跟他们做点什么，具体做什么"><a href="#foreach-就是你按顺序一个一个跟他们做点什么，具体做什么" class="headerlink" title="foreach 就是你按顺序一个一个跟他们做点什么，具体做什么:"></a>foreach 就是你按顺序一个一个跟他们做点什么，具体做什么:</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">people.<span class="title function_">forEach</span>(<span class="keyword">function</span> (<span class="params">dude</span>) &#123;</span><br><span class="line">  dude.<span class="title function_">pickUpSoap</span>();</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>forEach还有另一种用法<code>forEach(args,callback),</code>这里的args是回调函数执行forEach的作用域.</p>
+<h3 id="map-就是你手里拿一个盒子（一个新的数组），一个一个叫他们把钱包扔进去。结束的时候你获得了一个新的数组，里面是大家的钱包，钱包的顺序和人的顺序一一对应。"><a href="#map-就是你手里拿一个盒子（一个新的数组），一个一个叫他们把钱包扔进去。结束的时候你获得了一个新的数组，里面是大家的钱包，钱包的顺序和人的顺序一一对应。" class="headerlink" title="map 就是你手里拿一个盒子（一个新的数组），一个一个叫他们把钱包扔进去。结束的时候你获得了一个新的数组，里面是大家的钱包，钱包的顺序和人的顺序一一对应。"></a>map 就是你手里拿一个盒子（一个新的数组），一个一个叫他们把钱包扔进去。结束的时候你获得了一个新的数组，里面是大家的钱包，钱包的顺序和人的顺序一一对应。</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wallets = people.<span class="title function_">map</span>(<span class="keyword">function</span> (<span class="params">dude</span>) &#123;  </span><br><span class="line">	<span class="keyword">return</span> dude.<span class="property">wallet</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="reduce-就是你拿着钱包，一个一个数过去看里面有多少钱啊？每检查一个，你就和前面的总和加一起来。这样结束的时候你就知道大家总共有多少钱了。"><a href="#reduce-就是你拿着钱包，一个一个数过去看里面有多少钱啊？每检查一个，你就和前面的总和加一起来。这样结束的时候你就知道大家总共有多少钱了。" class="headerlink" title="reduce 就是你拿着钱包，一个一个数过去看里面有多少钱啊？每检查一个，你就和前面的总和加一起来。这样结束的时候你就知道大家总共有多少钱了。"></a>reduce 就是你拿着钱包，一个一个数过去看里面有多少钱啊？每检查一个，你就和前面的总和加一起来。这样结束的时候你就知道大家总共有多少钱了。</h3><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var totalMoney = wallets.reduce(function (countedMoney, wallet) &#123;</span><br><span class="line">	return countedMoney + wallet.money;</span><br><span class="line">&#125;, 0);</span><br></pre></td></tr></table></figure>
+
+<h3 id="补充一个-filter-的：你一个个钱包数过去的时候，里面钱少于-100-块的不要（留在原来的盒子里），多于-100-块的丢到一个新的盒子里。这样结束的时候你又有了一个新的数组，里面是所有钱多于-100-块的钱包："><a href="#补充一个-filter-的：你一个个钱包数过去的时候，里面钱少于-100-块的不要（留在原来的盒子里），多于-100-块的丢到一个新的盒子里。这样结束的时候你又有了一个新的数组，里面是所有钱多于-100-块的钱包：" class="headerlink" title="补充一个 filter 的：你一个个钱包数过去的时候，里面钱少于 100 块的不要（留在原来的盒子里），多于 100 块的丢到一个新的盒子里。这样结束的时候你又有了一个新的数组，里面是所有钱多于 100 块的钱包："></a>补充一个 filter 的：你一个个钱包数过去的时候，里面钱少于 100 块的不要（留在原来的盒子里），多于 100 块的丢到一个新的盒子里。这样结束的时候你又有了一个新的数组，里面是所有钱多于 100 块的钱包：</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fatWallets = wallets.<span class="title function_">filter</span>(<span class="keyword">function</span> (<span class="params">wallet</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> wallet.<span class="property">money</span> &gt; <span class="number">100</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="apply-call-bind"><a href="#apply-call-bind" class="headerlink" title="apply,call,bind"></a>apply,call,bind</h2><p>apply、call<br>在 javascript 中，call 和 apply 都是为了改变某个函数运行时的上下文（context）而存在的，换句话说，就是为了改变函数体内部 this 的指向。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">fruits</span>(<span class="params"></span>) &#123;&#125;</span><br><span class="line"> </span><br><span class="line">fruits.<span class="property"><span class="keyword">prototype</span></span> = &#123;</span><br><span class="line">    <span class="attr">color</span>: <span class="string">&quot;red&quot;</span>,</span><br><span class="line">    <span class="attr">say</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;My color is &quot;</span> + <span class="variable language_">this</span>.<span class="property">color</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">var</span> apple = <span class="keyword">new</span> fruits;</span><br><span class="line">apple.<span class="title function_">say</span>();    <span class="comment">//My color is red</span></span><br><span class="line">banana = &#123;</span><br><span class="line">    <span class="attr">color</span>: <span class="string">&quot;yellow&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">apple.<span class="property">say</span>.<span class="title function_">call</span>(banana);     <span class="comment">//My color is yellow</span></span><br><span class="line">apple.<span class="property">say</span>.<span class="title function_">apply</span>(banana);    <span class="comment">//My color is yellow</span></span><br></pre></td></tr></table></figure>
+
+<p>所以，可以看出 call 和 apply 是为了动态改变 this 而出现的，当一个 object 没有某个方法（本栗子中banana没有say方法），但是其他的有（本栗子中apple有say方法），我们可以借助call或apply用其它对象的方法来操作。</p>
+<h3 id="apply、call-的区别"><a href="#apply、call-的区别" class="headerlink" title="apply、call 的区别"></a>apply、call 的区别</h3><p>对于 apply、call 二者而言，作用完全一样，只是接受参数的方式不太一样。例如，有一个函数定义如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> func = <span class="keyword">function</span>(<span class="params">arg1, arg2</span>) &#123;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>就可以通过如下方式来调用：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">func.<span class="title function_">call</span>(<span class="variable language_">this</span>, arg1, arg2);</span><br><span class="line">func.<span class="title function_">apply</span>(<span class="variable language_">this</span>, [arg1, arg2])</span><br></pre></td></tr></table></figure>
+
+<p>其中 this 是你想指定的上下文，他可以是任何一个 JavaScript 对象(JavaScript 中一切皆对象)，call 需要把参数按顺序传递进去，而 apply 则是把参数放在数组里。<br>而bind,其实作用和apply还有call差不多<br>区别在于后者是立即执行,而bind是稍后执行<br>而且JavaScript中多次绑定是无效的,只有第一个绑定的对象有效</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/11/29/this%20%E7%9A%84%E6%8C%87%E5%90%91/" rel="prev" title="JavaScript this 的指向">
+      <i class="fa fa-chevron-left"></i> JavaScript this 的指向
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/11/29/%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%20%E9%98%BB%E5%A1%9E%E9%9D%9E%E9%98%BB%E5%A1%9E/" rel="next" title="对 JS 异步非阻塞的理解">
+      对 JS 异步非阻塞的理解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-number">1.</span> <span class="nav-text">扩展运算符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#x3D-gt-%E7%AE%AD%E5%A4%B4%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">&#x3D;&gt;箭头函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E8%AF%B4%E5%B0%B1%E6%98%AF%E6%8A%8Afunction-%E5%8F%82%E6%95%B01-%E5%8F%82%E6%95%B02-%E5%8C%96%E7%AE%80%E4%BA%86-%E5%8F%82%E6%95%B01-%E5%8F%82%E6%95%B02-x3D-gt"><span class="nav-number">2.1.</span> <span class="nav-text">简单的说就是把function(参数1,参数2){}化简了 (参数1,参数2) &#x3D;&gt;{}</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%98%E8%A6%81%E6%B3%A8%E6%84%8F%E4%B8%80%E7%82%B9-x3D-gt-%E5%87%BD%E6%95%B0%E4%B8%8D%E8%83%BD%E4%BD%BF%E7%94%A8yield%E5%91%BD%E4%BB%A4-%E6%89%80%E4%BB%A5%E4%B8%8D%E8%83%BD%E7%94%A8%E4%BD%9CGenerator%E5%87%BD%E6%95%B0-%E4%B9%9F%E4%B8%8D%E5%8F%AF%E4%BB%A5%E5%BD%93%E5%81%9A%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0-%E5%8D%B3%E4%B8%8D%E5%8F%AF%E4%BD%BF%E7%94%A8new%E5%91%BD%E4%BB%A4-%E6%80%BB%E7%BB%93-x3D-gt-%E5%87%BD%E6%95%B0%E5%B0%B1%E6%98%AF%E7%94%A8%E5%9C%A8%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%E7%AD%89%E6%AF%94%E8%BE%83%E7%AE%80%E5%8D%95%E7%9A%84%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0%E9%87%8C-%E6%96%B9%E4%BE%BF%E5%86%99-%E6%96%B9%E4%BE%BF%E7%9C%8B"><span class="nav-number">2.2.</span> <span class="nav-text">还要注意一点&#x3D;&gt;函数不能使用yield命令,所以不能用作Generator函数,也不可以当做构造函数,即不可使用new命令.总结,&#x3D;&gt;函数就是用在回调函数等比较简单的匿名函数里,方便写,方便看.</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E7%9A%84%E8%A7%A3%E6%9E%84%E8%B5%8B%E5%80%BC"><span class="nav-number">3.</span> <span class="nav-text">变量的解构赋值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8"><span class="nav-number">3.1.</span> <span class="nav-text">使用:</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map"><span class="nav-number">4.</span> <span class="nav-text">map</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BD%93%E5%81%9A%E9%81%8D%E5%8E%86%E6%97%B6-%E7%AE%80%E5%8D%95%E7%9A%84%E8%AF%B4%E5%B0%B1%E6%98%AF%E6%8A%8A%E6%95%B0%E7%BB%84%E5%BD%93%E5%89%8D%E7%9A%84%E6%AF%8F%E4%B8%80%E4%B8%AA%E5%80%BC-%E4%BE%9D%E6%AC%A1%E7%9A%84%E4%BC%A0%E5%88%B0%E5%8F%82%E6%95%B0-%E4%B8%AD%E4%BE%8B%E5%A6%82"><span class="nav-number">4.1.</span> <span class="nav-text">当做遍历时,简单的说就是把数组当前的每一个值,依次的传到参数()中例如</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%99%E7%AC%AC%E4%BA%8C%E7%A7%8D%E6%83%85%E5%86%B5%E5%91%A2-map%E6%98%AF%E4%B8%80%E4%B8%AAObject%E7%9A%84%E5%8F%98%E5%BD%A2"><span class="nav-number">4.2.</span> <span class="nav-text">这第二种情况呢,map是一个Object的变形</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%99%E9%87%8C%E9%A1%BA%E4%BE%BF%E8%AE%B2%E4%B8%80%E4%B8%8B%E6%95%B0%E7%BB%84%E7%9A%84%E9%81%8D%E5%8E%86%E6%96%B9%E6%B3%95-forEach-map-reduce-filter"><span class="nav-number">5.</span> <span class="nav-text">这里顺便讲一下数组的遍历方法 forEach,map, reduce, filter</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#foreach-%E5%B0%B1%E6%98%AF%E4%BD%A0%E6%8C%89%E9%A1%BA%E5%BA%8F%E4%B8%80%E4%B8%AA%E4%B8%80%E4%B8%AA%E8%B7%9F%E4%BB%96%E4%BB%AC%E5%81%9A%E7%82%B9%E4%BB%80%E4%B9%88%EF%BC%8C%E5%85%B7%E4%BD%93%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">5.1.</span> <span class="nav-text">foreach 就是你按顺序一个一个跟他们做点什么，具体做什么:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#map-%E5%B0%B1%E6%98%AF%E4%BD%A0%E6%89%8B%E9%87%8C%E6%8B%BF%E4%B8%80%E4%B8%AA%E7%9B%92%E5%AD%90%EF%BC%88%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84%E6%95%B0%E7%BB%84%EF%BC%89%EF%BC%8C%E4%B8%80%E4%B8%AA%E4%B8%80%E4%B8%AA%E5%8F%AB%E4%BB%96%E4%BB%AC%E6%8A%8A%E9%92%B1%E5%8C%85%E6%89%94%E8%BF%9B%E5%8E%BB%E3%80%82%E7%BB%93%E6%9D%9F%E7%9A%84%E6%97%B6%E5%80%99%E4%BD%A0%E8%8E%B7%E5%BE%97%E4%BA%86%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84%E6%95%B0%E7%BB%84%EF%BC%8C%E9%87%8C%E9%9D%A2%E6%98%AF%E5%A4%A7%E5%AE%B6%E7%9A%84%E9%92%B1%E5%8C%85%EF%BC%8C%E9%92%B1%E5%8C%85%E7%9A%84%E9%A1%BA%E5%BA%8F%E5%92%8C%E4%BA%BA%E7%9A%84%E9%A1%BA%E5%BA%8F%E4%B8%80%E4%B8%80%E5%AF%B9%E5%BA%94%E3%80%82"><span class="nav-number">5.2.</span> <span class="nav-text">map 就是你手里拿一个盒子（一个新的数组），一个一个叫他们把钱包扔进去。结束的时候你获得了一个新的数组，里面是大家的钱包，钱包的顺序和人的顺序一一对应。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#reduce-%E5%B0%B1%E6%98%AF%E4%BD%A0%E6%8B%BF%E7%9D%80%E9%92%B1%E5%8C%85%EF%BC%8C%E4%B8%80%E4%B8%AA%E4%B8%80%E4%B8%AA%E6%95%B0%E8%BF%87%E5%8E%BB%E7%9C%8B%E9%87%8C%E9%9D%A2%E6%9C%89%E5%A4%9A%E5%B0%91%E9%92%B1%E5%95%8A%EF%BC%9F%E6%AF%8F%E6%A3%80%E6%9F%A5%E4%B8%80%E4%B8%AA%EF%BC%8C%E4%BD%A0%E5%B0%B1%E5%92%8C%E5%89%8D%E9%9D%A2%E7%9A%84%E6%80%BB%E5%92%8C%E5%8A%A0%E4%B8%80%E8%B5%B7%E6%9D%A5%E3%80%82%E8%BF%99%E6%A0%B7%E7%BB%93%E6%9D%9F%E7%9A%84%E6%97%B6%E5%80%99%E4%BD%A0%E5%B0%B1%E7%9F%A5%E9%81%93%E5%A4%A7%E5%AE%B6%E6%80%BB%E5%85%B1%E6%9C%89%E5%A4%9A%E5%B0%91%E9%92%B1%E4%BA%86%E3%80%82"><span class="nav-number">5.3.</span> <span class="nav-text">reduce 就是你拿着钱包，一个一个数过去看里面有多少钱啊？每检查一个，你就和前面的总和加一起来。这样结束的时候你就知道大家总共有多少钱了。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A5%E5%85%85%E4%B8%80%E4%B8%AA-filter-%E7%9A%84%EF%BC%9A%E4%BD%A0%E4%B8%80%E4%B8%AA%E4%B8%AA%E9%92%B1%E5%8C%85%E6%95%B0%E8%BF%87%E5%8E%BB%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E9%87%8C%E9%9D%A2%E9%92%B1%E5%B0%91%E4%BA%8E-100-%E5%9D%97%E7%9A%84%E4%B8%8D%E8%A6%81%EF%BC%88%E7%95%99%E5%9C%A8%E5%8E%9F%E6%9D%A5%E7%9A%84%E7%9B%92%E5%AD%90%E9%87%8C%EF%BC%89%EF%BC%8C%E5%A4%9A%E4%BA%8E-100-%E5%9D%97%E7%9A%84%E4%B8%A2%E5%88%B0%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84%E7%9B%92%E5%AD%90%E9%87%8C%E3%80%82%E8%BF%99%E6%A0%B7%E7%BB%93%E6%9D%9F%E7%9A%84%E6%97%B6%E5%80%99%E4%BD%A0%E5%8F%88%E6%9C%89%E4%BA%86%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84%E6%95%B0%E7%BB%84%EF%BC%8C%E9%87%8C%E9%9D%A2%E6%98%AF%E6%89%80%E6%9C%89%E9%92%B1%E5%A4%9A%E4%BA%8E-100-%E5%9D%97%E7%9A%84%E9%92%B1%E5%8C%85%EF%BC%9A"><span class="nav-number">5.4.</span> <span class="nav-text">补充一个 filter 的：你一个个钱包数过去的时候，里面钱少于 100 块的不要（留在原来的盒子里），多于 100 块的丢到一个新的盒子里。这样结束的时候你又有了一个新的数组，里面是所有钱多于 100 块的钱包：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#apply-call-bind"><span class="nav-number">6.</span> <span class="nav-text">apply,call,bind</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#apply%E3%80%81call-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">6.1.</span> <span class="nav-text">apply、call 的区别</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>

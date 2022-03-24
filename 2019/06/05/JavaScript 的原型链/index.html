@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hwl.me","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"buttons","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":false,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="JavaScript 的原型链JavaScript 的原型链关系到js 的对象,方法实例化的原理,弄懂原型链就可以明白 js 封装继承的原理.对理解js 的面向对象有很大的帮助.在 ES6 中引入了 class 关键字，但那只是语法糖，JavaScript 仍然是基于原型链的.原型链主要是由 2 个对象实现的: __proto__ 和 prototype __proto__和 prototypeJ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript 的原型链">
+<meta property="og:url" content="http://hwl.me/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/index.html">
+<meta property="og:site_name" content="黄威龙的笔记">
+<meta property="og:description" content="JavaScript 的原型链JavaScript 的原型链关系到js 的对象,方法实例化的原理,弄懂原型链就可以明白 js 封装继承的原理.对理解js 的面向对象有很大的帮助.在 ES6 中引入了 class 关键字，但那只是语法糖，JavaScript 仍然是基于原型链的.原型链主要是由 2 个对象实现的: __proto__ 和 prototype __proto__和 prototypeJ">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190605193923.png">
+<meta property="og:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190605191625.png">
+<meta property="article:published_time" content="2019-06-05T07:51:54.000Z">
+<meta property="article:modified_time" content="2019-12-19T06:43:07.000Z">
+<meta property="article:author" content="黄威龙">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190605193923.png">
+
+<link rel="canonical" href="http://hwl.me/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JavaScript 的原型链 | 黄威龙的笔记</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">黄威龙的笔记</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding 笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript 的原型链
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-06-05 15:51:54" itemprop="dateCreated datePublished" datetime="2019-06-05T15:51:54+08:00">2019-06-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-12-19 14:43:07" itemprop="dateModified" datetime="2019-12-19T14:43:07+08:00">2019-12-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/" class="post-meta-item leancloud_visitors" data-flag-title="JavaScript 的原型链" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/06/05/JavaScript%20%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="JavaScript-的原型链"><a href="#JavaScript-的原型链" class="headerlink" title="JavaScript 的原型链"></a>JavaScript 的原型链</h1><p>JavaScript 的原型链关系到js 的对象,方法实例化的原理,弄懂原型链就可以明白 js 封装继承的原理.对理解js 的面向对象有很大的帮助.在 ES6 中引入了 class 关键字，但那只是语法糖，JavaScript 仍然是基于原型链的.<br>原型链主要是由 2 个对象实现的: <code>__proto__</code> 和 <code>prototype</code></p>
+<h2 id="proto-和-prototype"><a href="#proto-和-prototype" class="headerlink" title="__proto__和 prototype"></a>__proto__和 prototype</h2><p>JavaScript 的所有对象都有<code>__proto__</code>这个属性,其实<code>__proto__</code>就是一个指针, 他指向实例化他这个对象的原始对象的 prototype 对象.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Book</span> &#123;&#125; <span class="comment">// function Book() &#123;&#125;</span></span><br><span class="line"><span class="keyword">const</span> mathBook = <span class="keyword">new</span> <span class="title class_">Book</span>();</span><br><span class="line"><span class="comment">// 这里mathBook.__proto__ === Book.prototype</span></span><br><span class="line"><span class="comment">// 这就是__proto__指向实例化他的原始对象的 prototype.</span></span><br></pre></td></tr></table></figure>
+<p>prototype 是所有的<strong>函数对象</strong>都有的属性,当一个<strong>函数对象</strong>被 new 实例化时,他的 prototype 里的属性和方法都会被复制一份,放到实例化的对象里,并且 prototype 这个对象也有<code>__proto__</code>对象,实例化的时候还会把<code>__proto__</code>指向的对象的 prototype 里的属性和方法也复制一份.也就实现了继承.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Book</span> &#123;&#125;</span><br><span class="line"><span class="keyword">const</span> mathBook = <span class="keyword">new</span> <span class="title class_">Book</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Book</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">__proto__</span> === <span class="title class_">Object</span>.<span class="property"><span class="keyword">prototype</span></span>) <span class="comment">// true</span></span><br><span class="line"><span class="comment">// 但是 mathBook 是没有 prototype 属性的,因为他是一个实例化对象,而不是一个函数,js 中的类是用函数模拟出来的,全依赖这个 prototype</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="JavaScript-的基本数据类型"><a href="#JavaScript-的基本数据类型" class="headerlink" title="JavaScript 的基本数据类型"></a>JavaScript 的基本数据类型</h2><p>JavaScript 的基本数据类型也是通过这种方法实现的.</p>
+<span id="more"></span>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a = <span class="number">1</span>; <span class="comment">// const a = new Number(1);</span></span><br><span class="line"><span class="keyword">const</span> str = <span class="string">&#x27;String&#x27;</span>; <span class="comment">// const str = new String(String);</span></span><br></pre></td></tr></table></figure>
+<p>这个时候 a 和 str 就是 Number 和 String 函数(方法,类)的实例化对象.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a.<span class="property">__proto__</span> === <span class="title class_">Number</span>.<span class="property"><span class="keyword">prototype</span></span>;</span><br><span class="line">str.<span class="property">__proto__</span> === <span class="title class_">String</span>.<span class="property"><span class="keyword">prototype</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>而这些数据类型又都是 Object 对象的子类.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Number</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">__proto__</span> === <span class="title class_">Object</span>.<span class="property"><span class="keyword">prototype</span></span></span><br></pre></td></tr></table></figure>
+<p>如果你写一个类继承于 Number,例如 <code>class Int extend Number&#123;&#125;</code><br>那么这个类的实例化对象就会有</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Int</span> extend <span class="title class_">Number</span>&#123;&#125;</span><br><span class="line"><span class="keyword">const</span> a = <span class="keyword">new</span> <span class="title class_">Int</span>()</span><br><span class="line">a.<span class="property">__proto__</span> === <span class="title class_">Int</span>.<span class="property"><span class="keyword">prototype</span></span></span><br><span class="line">a.<span class="property">__proto__</span>.<span class="property">__proto__</span> === <span class="title class_">Number</span>.<span class="property"><span class="keyword">prototype</span></span></span><br><span class="line">a.<span class="property">__proto__</span>.<span class="property">__proto__</span>.<span class="property">__proto__</span> === <span class="title class_">Object</span>.<span class="property"><span class="keyword">prototype</span></span></span><br></pre></td></tr></table></figure>
+
+<p>经过测试</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Function</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">__proto__</span> === <span class="title class_">Object</span>.<span class="property"><span class="keyword">prototype</span></span>; <span class="comment">// true</span></span><br><span class="line"><span class="title class_">Number</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">__proto__</span> === <span class="title class_">Object</span>.<span class="property"><span class="keyword">prototype</span></span>; <span class="comment">// true</span></span><br><span class="line"><span class="title class_">String</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">__proto__</span> === <span class="title class_">Number</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">__proto__</span>; <span class="comment">// true</span></span><br><span class="line"><span class="title class_">Object</span>.<span class="property">__proto__</span> === <span class="literal">null</span>; <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>所以 JavaScript 的数据类型都是 Object 类型的子类,所以说 JavaScript 的所有数据都是对象<br>而原型链的终点就是 null</p>
+<p>关于函数: JavaScript 语言将函数看作一种值，与其它值（数值、字符串、布尔值等等）地位相同。凡是可以使用值的地方，就能使用函数。比如，可以把函数赋值给变量和对象的属性，也可以当作参数传入其他函数，或者作为函数的结果返回。函数只是一个可以执行的值，此外并无特殊之处。<br>由于函数与其他数据类型地位平等，所以在 JavaScript 语言中又称函数为第一等公民。</p>
+<h2 id="construction-方法"><a href="#construction-方法" class="headerlink" title="construction 方法"></a>construction 方法</h2><p>构造方法,也就是实例化对象时(new)调用的方法.这个方法其实就是一个类的名字指向的地址.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Number</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">constructor</span> === <span class="title class_">Number</span>; <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>而实例化之后的对象也拥有 construction 方法,他指向他的类</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> a = <span class="number">1</span>;</span><br><span class="line">a.<span class="property">constructor</span> === <span class="title class_">Number</span>; <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>这样就可以更容易判断一个对象他由哪个类实例化而来了</p>
+<p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190605193923.png"></p>
+<h2 id="new-运算符"><a href="#new-运算符" class="headerlink" title="new 运算符"></a>new 运算符</h2><p>new运算符的原理: </p>
+<ol>
+<li>创建一个空对象，作为将要返回的对象实例。</li>
+<li>将这个空对象的原型，指向构造函数的prototype属性。</li>
+<li>将这个空对象赋值给函数内部的this关键字。</li>
+<li>开始执行构造函数内部的代码。</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_new</span>(<span class="params"><span class="comment">/* 构造函数 */</span> constructor, <span class="comment">/* 构造函数参数 */</span> params</span>) &#123;</span><br><span class="line">  <span class="comment">// 将 arguments 对象转为数组</span></span><br><span class="line">  <span class="keyword">var</span> args = [].<span class="property">slice</span>.<span class="title function_">call</span>(<span class="variable language_">arguments</span>);</span><br><span class="line">  <span class="comment">// 取出构造函数</span></span><br><span class="line">  <span class="keyword">var</span> constructor = args.<span class="title function_">shift</span>();</span><br><span class="line">  <span class="comment">// 创建一个空对象，继承构造函数的 prototype 属性</span></span><br><span class="line">  <span class="keyword">var</span> context = <span class="title class_">Object</span>.<span class="title function_">create</span>(constructor.<span class="property"><span class="keyword">prototype</span></span>);</span><br><span class="line">  <span class="comment">// 执行构造函数</span></span><br><span class="line">  <span class="keyword">var</span> result = constructor.<span class="title function_">apply</span>(context, args);</span><br><span class="line">  <span class="comment">// 如果返回结果是对象，就直接返回，否则返回 context 对象</span></span><br><span class="line">  <span class="keyword">return</span> (<span class="keyword">typeof</span> result === <span class="string">&#x27;object&#x27;</span> &amp;&amp; result != <span class="literal">null</span>) ? result : context;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Object-create"><a href="#Object-create" class="headerlink" title="Object.create()"></a>Object.create()</h2><p>构造函数作为模板，可以生成实例对象。但是，有时拿不到构造函数，只能拿到一个现有的对象。我们希望以这个现有的对象作为模板，生成新的实例对象，这时就可以使用Object.create()方法。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> person1 = &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="string">&#x27;张三&#x27;</span>,</span><br><span class="line">  <span class="attr">age</span>: <span class="number">38</span>,</span><br><span class="line">  <span class="attr">greeting</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Hi! I\&#x27;m &#x27;</span> + <span class="variable language_">this</span>.<span class="property">name</span> + <span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> person2 = <span class="title class_">Object</span>.<span class="title function_">create</span>(person1);</span><br><span class="line"></span><br><span class="line">person2.<span class="property">name</span> <span class="comment">// 张三</span></span><br><span class="line">person2.<span class="title function_">greeting</span>() <span class="comment">// Hi! I&#x27;m 张三.</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="原型链的作用"><a href="#原型链的作用" class="headerlink" title="原型链的作用"></a>原型链的作用</h2><p>在面向对象编程中,子类会继承父类的方法和属性,当一个属性在子类的实例化对象中找不到时,就会去找他父类的属性.JavaScript 的原型链也是这样工作的,查找一个对象的属性或者方法,就会去他的<code>__proto__</code>指向的prototype 中找,如果还没有,就会去 prototype.__proto__指向的 prototype 中找,一直找到 Object.prototype.这也就实现了类的继承.</p>
+<p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190605191625.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/05/31/firebase%20%E6%8E%A8%E9%80%81/" rel="prev" title="firebase 消息推送">
+      <i class="fa fa-chevron-left"></i> firebase 消息推送
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/06/14/Vue-store%20%E7%AC%94%E8%AE%B0/" rel="next" title="Vue-store 笔记">
+      Vue-store 笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JavaScript-%E7%9A%84%E5%8E%9F%E5%9E%8B%E9%93%BE"><span class="nav-number">1.</span> <span class="nav-text">JavaScript 的原型链</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#proto-%E5%92%8C-prototype"><span class="nav-number">1.1.</span> <span class="nav-text">__proto__和 prototype</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript-%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">JavaScript 的基本数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#construction-%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">construction 方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new-%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-number">1.4.</span> <span class="nav-text">new 运算符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-create"><span class="nav-number">1.5.</span> <span class="nav-text">Object.create()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">1.6.</span> <span class="nav-text">原型链的作用</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="黄威龙"
+      src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+  <p class="site-author-name" itemprop="name">黄威龙</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">黄威龙</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.18/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'n3kMUasCW4NfaYTKdzFeXOsH-9Nh9j0Va',
+      appKey     : 'ReeHIG1mtCsaRM3ArQRy321G',
+      placeholder: "欢迎交流",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : 'zh-cn' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : 'https://hwl.me'
+    });
+  }, window.Valine);
+});
+</script>
+
+  
+  
+  <script type="text/javascript" color="0,0,255" opacity='0.7' zIndex="-2" count="200" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+  
+</body>
+</html>
