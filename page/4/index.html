@@ -180,6 +180,225 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/10/15/mongo%20%E7%B4%A2%E5%BC%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/15/mongo%20%E7%B4%A2%E5%BC%95/" class="post-title-link" itemprop="url">mongoDB 索引建立</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-15 18:04:10" itemprop="dateCreated datePublished" datetime="2019-10-15T18:04:10+08:00">2019-10-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-25 12:01:41" itemprop="dateModified" datetime="2019-10-25T12:01:41+08:00">2019-10-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/10/15/mongo%20%E7%B4%A2%E5%BC%95/" class="post-meta-item leancloud_visitors" data-flag-title="mongoDB 索引建立" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/10/15/mongo%20%E7%B4%A2%E5%BC%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/10/15/mongo%20%E7%B4%A2%E5%BC%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>众所周知,数据库建立索引后速度会有极大的提升.但前提是正确的建立索引,否则数据库查询就不会走索引,而导致慢查询,不仅影响当前服务的性能,甚至可能影响其他使用同一数据库的服务的性能.</p>
+<p>而索引分为独立索引和组合索引.</p>
+<h1 id="独立索引-Single-field-index"><a href="#独立索引-Single-field-index" class="headerlink" title="独立索引(Single field index)"></a>独立索引(Single field index)</h1><p>对单独字段建立索引,例如:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span> <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="number">1</span> <span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>1 表示升序索引,-1 表示降序索引</p>
+<p>查询条件为单一条件时有效,当查询条件为多个条件组合时,不会一一匹配独立索引</p>
+<h2 id="独立索引的-sort-排序"><a href="#独立索引的-sort-排序" class="headerlink" title="独立索引的 sort 排序"></a>独立索引的 sort 排序</h2><p>对于独立索引来说，由于 MongoDB index 本身支持顺序查找，所以对于独立索引来说不管你是<code>&#123; sort: 1&#125; </code>还是<code>&#123; sort: -1 &#125;</code>都是一样的</p>
+<h1 id="组合索引-Compound-index"><a href="#组合索引-Compound-index" class="headerlink" title="组合索引(Compound index)"></a>组合索引(Compound index)</h1><p>当查询条件为多个条件组合时,需要建立组合索引,例如:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;distributorNo&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;payEnv&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;orderStatus&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;region&quot;</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;createdAt&quot;</span><span class="punctuation">:</span> <span class="number">-1</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>组合索引中条件的顺序对索引的性能有至关重要的影响，比如索引 {userid:1, score:-1} 首先根据 userid 排序，然后再在每个 userid 中根据 score 排序。</p>
+<h2 id="使用组合索引需要满足-prefix-原则"><a href="#使用组合索引需要满足-prefix-原则" class="headerlink" title="使用组合索引需要满足 prefix 原则"></a>使用组合索引需要满足 prefix 原则</h2><p>Index prefix 是指组合索引字段的左前缀子集，考虑以下索引：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/10/15/mongo%20%E7%B4%A2%E5%BC%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/09/17/Vue%20%E4%BC%A0%E5%8F%82%E4%B8%8Ewatch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
+      <meta itemprop="name" content="黄威龙">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="黄威龙的笔记">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/09/17/Vue%20%E4%BC%A0%E5%8F%82%E4%B8%8Ewatch/" class="post-title-link" itemprop="url">Vue 传参与watch</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-17 18:01:04" itemprop="dateCreated datePublished" datetime="2019-09-17T18:01:04+08:00">2019-09-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-09-24 14:28:04" itemprop="dateModified" datetime="2019-09-24T14:28:04+08:00">2019-09-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">前端学习笔记</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/09/17/Vue%20%E4%BC%A0%E5%8F%82%E4%B8%8Ewatch/" class="post-meta-item leancloud_visitors" data-flag-title="Vue 传参与watch" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/09/17/Vue%20%E4%BC%A0%E5%8F%82%E4%B8%8Ewatch/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/09/17/Vue%20%E4%BC%A0%E5%8F%82%E4%B8%8Ewatch/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="模块间传参"><a href="#模块间传参" class="headerlink" title="模块间传参"></a>模块间传参</h1><p>传参用的字段名不能用驼峰或者下划线,要全小写<br>到 B页面用 props 声明,字段名要加引号,之后使用方式和 data 声明的变量一样,在 js 内用 this.引用,在 HTML 内直接引用</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// A 模块中引用 B 模块</span><br><span class="line"><span class="tag">&lt;<span class="name">videoRegionStatCharts</span> <span class="attr">:topicid</span>=<span class="string">&quot;topicId&quot;</span> <span class="attr">:timestamp</span>=<span class="string">&quot;listQuery.timestamp&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// B 模块</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="attr">components</span>: &#123; timePicker &#125;,</span><br><span class="line">  <span class="attr">props</span>: [<span class="string">&#x27;topicid&#x27;</span>, <span class="string">&#x27;timestamp&#x27;</span>],</span><br><span class="line">  <span class="title function_">data</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="attr">listQuery</span>: &#123;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="watch-方法"><a href="#watch-方法" class="headerlink" title="watch 方法"></a>watch 方法</h1><p>watch 监听的字段不能是 data 声明的字段<br>用 computed或者 props 声明的字段可以被 watch</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">props</span>: [<span class="string">&#x27;topicid&#x27;</span>, <span class="string">&#x27;timestamp&#x27;</span>,<span class="string">&#x27;regionparam&#x27;</span>],</span><br><span class="line"><span class="title function_">data</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="attr">listQuery</span>: &#123;</span><br><span class="line">      <span class="attr">region</span>: <span class="variable language_">this</span>.<span class="property">regionparam</span>,</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;,</span><br><span class="line"><span class="attr">computed</span>: &#123; <span class="comment">// 这里要监听 this.listQuery.region,不能直接监听 data 声明的变量,要用 computed 声明并返回 this.listQuery.region 实现绑定</span></span><br><span class="line">  <span class="attr">region</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">listQuery</span>.<span class="property">region</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;,</span><br><span class="line"><span class="attr">watch</span>: &#123;</span><br><span class="line">  <span class="attr">topicid</span>: <span class="keyword">function</span>(<span class="params">val</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">listQuery</span>.<span class="property">topicId</span> = val</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">drawLine</span>()</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">region</span>: <span class="keyword">function</span>(<span class="params">val</span>) &#123; <span class="comment">// 这里监听的其实是 this.listQuery.region</span></span><br><span class="line">    <span class="variable language_">this</span>.$emit(<span class="string">&#x27;changeRegion&#x27;</span>, val) <span class="comment">// 向父组件传参</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">timestamp</span>: <span class="keyword">function</span>(<span class="params">val</span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">listQuery</span>.<span class="property">timestamp</span> = val</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">drawLine</span>()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="子组件向父组件传参"><a href="#子组件向父组件传参" class="headerlink" title="子组件向父组件传参"></a>子组件向父组件传参</h1><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">videoRegionStatCharts</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:topicid</span>=<span class="string">&quot;topicId&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:regionparam</span>=<span class="string">&quot;listQuery.region&quot;</span></span></span><br><span class="line"><span class="tag">  <span class="attr">:timestamp</span>=<span class="string">&quot;listQuery.timestamp&quot;</span></span></span><br><span class="line"><span class="tag">  @<span class="attr">changeRegion</span>=<span class="string">&quot;handleChangeRegion&quot;</span></span></span><br><span class="line"><span class="tag">/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--子组件传参--&gt;</span><br><span class="line"><span class="attr">region</span>: <span class="keyword">function</span>(<span class="params">val</span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.$emit(<span class="string">&#x27;changeRegion&#x27;</span>, val)</span><br><span class="line">&#125;</span><br><span class="line">&lt;!--父组件响应--&gt;</span><br><span class="line"><span class="title function_">handleChangeRegion</span>(<span class="params">val</span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">listQuery</span>.<span class="property">region</span> = val</span><br><span class="line">  <span class="variable language_">this</span>.<span class="title function_">handleFilter</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>通过<code>:regionparam</code>向子组件传参,子组件再通过<code>listQuery.region: this.regionparam</code>绑定参数,然后通过 computed 声明一个新变量来监听子组件参数的变化,如果子组件的这个参数变了会通过<code>this.$emit(&#39;changeRegion&#39;, val)</code>向父组件发送通知,父组件用<code>handleChangeRegion</code>响应子组件的传参<br>最终实现双向绑定</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/09/11/Docker%E5%92%8C%20K8S/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1008,222 +1227,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
-      <meta itemprop="name" content="黄威龙">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="黄威龙的笔记">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" class="post-title-link" itemprop="url">JavaScript 的错误处理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2019-05-31 10:51:34 / 修改时间：15:58:09" itemprop="dateCreated datePublished" datetime="2019-05-31T10:51:34+08:00">2019-05-31</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JavaScript/" itemprop="url" rel="index"><span itemprop="name">JavaScript</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" class="post-meta-item leancloud_visitors" data-flag-title="JavaScript 的错误处理" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在使用异步的终极解决方案-ES7的async&#x2F;await同时，如何优雅的处理错误提高代码的兼容性让作为码农的我很头疼。在项目实战中合理的使用try…catch…让代码的兼容和稳定性大大增强。</p>
-<h1 id="本文将对-try…catch…-分成三个方面来叙述。"><a href="#本文将对-try…catch…-分成三个方面来叙述。" class="headerlink" title="本文将对 try…catch… 分成三个方面来叙述。"></a>本文将对 try…catch… 分成三个方面来叙述。</h1><ul>
-<li>为什么要用</li>
-<li>如何使用</li>
-<li>实战</li>
-</ul>
-<h2 id="1、为什么要用-try…catch…"><a href="#1、为什么要用-try…catch…" class="headerlink" title="1、为什么要用 try…catch…"></a>1、为什么要用 try…catch…</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">funcAsync</span>(<span class="params"></span>)&#123;</span><br><span class="line">   <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;\n---begin---\n&#x27;</span>);</span><br><span class="line">   <span class="keyword">await</span> <span class="title function_">ih_func</span>();</span><br><span class="line">   <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;------end-----&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">ih_func</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="keyword">function</span> (<span class="params">resolve, reject</span>) &#123;</span><br><span class="line">    <span class="comment">//这里相当于throw一个异常了</span></span><br><span class="line">    <span class="title function_">reject</span>(<span class="string">&#x27;error&#x27;</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">funcAsync</span>();</span><br></pre></td></tr></table></figure>
-
-<p>运行结果</p>
-<p><img src="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/hwl.me/20190531110432.png"></p>
-<p>你一定会好奇为什么只打印了begin而没有打印end，这是因为reject(‘error’); 相当于throw一个异常了，所以程序就不会继续往下执行了，想要程序继续执行下去就需要处理throw出来的异常。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/05/31/js%20%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hwl.me/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://hwl-1255548986.cos.ap-guangzhou.myqcloud.com/img/20190308105822.jpeg">
-      <meta itemprop="name" content="黄威龙">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="黄威龙的笔记">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/" class="post-title-link" itemprop="url">google服务</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-04-25 16:58:00" itemprop="dateCreated datePublished" datetime="2019-04-25T16:58:00+08:00">2019-04-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-08 16:23:30" itemprop="dateModified" datetime="2020-12-08T16:23:30+08:00">2020-12-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/TechDoc/" itemprop="url" rel="index"><span itemprop="name">TechDoc</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/" class="post-meta-item leancloud_visitors" data-flag-title="google服务" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="google服务"><a href="#google服务" class="headerlink" title="google服务"></a>google服务</h1><h2 id="谷歌登录"><a href="#谷歌登录" class="headerlink" title="谷歌登录"></a>谷歌登录</h2><p>谷歌登录只需要 clientId.客户端会获取到 idToken,发送给后端以后,后端拿 idToken请求谷歌,谷歌会解析出这个 Google 账号的信息,其中azp参数就是 clientId,与本地的 clientId 对比,校验这个账号是不是本应用登录的.是的话就创建账号或登录,返回账号信息给客户端.</p>
-<h2 id="谷歌支付"><a href="#谷歌支付" class="headerlink" title="谷歌支付"></a>谷歌支付</h2><p>谷歌支付需要的参数:</p>
-<ul>
-<li>clientId</li>
-<li>clientSecret</li>
-<li>googlePublicKey</li>
-<li>最麻烦的refreshToken</li>
-</ul>
-<p>其中 clientId 和 clientSecret还有googlePublicKey在谷歌开发者后台可以拿到.<br>refreshToken 需要一连串的流程</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/04/25/%E8%B0%B7%E6%AD%8C%E6%9C%8D%E5%8A%A1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1295,7 +1298,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">106</span>
+          <span class="site-state-item-count">108</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
